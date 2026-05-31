@@ -1,0 +1,34 @@
+Manual 2D cross-correlation and pooling demonstration
+
+Input matrix:
+tensor([[ 1.,  2.,  3.,  4.],
+        [ 5.,  6.,  7.,  8.],
+        [ 9., 10., 11., 12.],
+        [13., 14., 15., 16.]])
+Kernel:
+tensor([[ 1.,  0.],
+        [ 0., -1.]])
+Manual cross-correlation:
+tensor([[-5., -5., -5.],
+        [-5., -5., -5.],
+        [-5., -5., -5.]])
+PyTorch conv2d result:
+tensor([[-5., -5., -5.],
+        [-5., -5., -5.],
+        [-5., -5., -5.]])
+Manual max-pooling:
+tensor([[ 6.,  8.],
+        [14., 16.]])
+PyTorch max-pooling:
+tensor([[ 6.,  8.],
+        [14., 16.]])
+Manual average-pooling:
+tensor([[ 3.5000,  5.5000],
+        [11.5000, 13.5000]])
+PyTorch average-pooling:
+tensor([[ 3.5000,  5.5000],
+        [11.5000, 13.5000]])
+
+Convolution output size example for 28x28, kernel=5, padding=0, stride=1: 24
+Convolution output size example for 28x28, kernel=5, padding=2, stride=1: 28
+Convolution output size example for 28x28, kernel=3, padding=1, stride=2: 14

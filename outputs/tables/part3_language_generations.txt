@@ -1,0 +1,7 @@
+rnn_no_clipping: this movie was natural in producer freeman fire agree accept fire realistic producer subtle probably wings play agree local o writers michael taking
+
+rnn_clipped: this movie was and no one thing a lot la any no one because a you kind one devil drop than anchor 0
+
+lstm_clipped: this movie was that that that to that that that to that that that to that that that that to that that that
+
+gru_clipped: this movie was see think fighter its . . he . . he . . he . he . . he . he

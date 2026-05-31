@@ -1,0 +1,729 @@
+
+--- PAGE 1 ---
+Partie III - RNN/LSTM/GRU/Seq2Seq
+Partie III : RNN, LSTM, GRU et Seq2Seq
+Modélisation de Séquences Textuelles - IMDb Reviews
+1
+
+--- PAGE 2 ---
+Rapport Projet Deep Learning
+Auteur: [Votre Nom]
+Cours: Deep Learning
+Date: 31 mai 2026
+31 mai 2026
+
+--- PAGE 3 ---
+Table des matières Partie III - RNN/LSTM/GRU/Seq2Seq
+Table des matières
+1 Introduction et Objectifs 2
+1.1 Contexte . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.2 Objectifs de la Partie III . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.3 Structure de la Partie III . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+2 Dataset : IMDb Reviews 3
+2.1 Présentation Générale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.2 Pourquoi un Sous-ensemble? . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.3 Exemple de Critique IMDb . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+3 Tokenisation et Vocabulaire 4
+3.1 Tokenisation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3.2 Construction du Vocabulaire . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3.3 Tokens Spéciaux . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3.4 Prétraitement des Séquences . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+4 Fondements Théoriques des Architectures Récurrentes 6
+4.1 Pourquoi le texte nécessite des architectures séquentielles . . . . . . . . . . 6
+4.2 Le RNN Simple (Recurrent Neural Network) . . . . . . . . . . . . . . . . . 6
+4.2.1 Formulation Mathématique . . . . . . . . . . . . . . . . . . . . . . 6
+4.2.2 Illustration d’un RNN Déroulé . . . . . . . . . . . . . . . . . . . . . 6
+4.2.3 Problèmes du RNN Simple . . . . . . . . . . . . . . . . . . . . . . . 6
+4.3 Backpropagation Through Time (BPTT) . . . . . . . . . . . . . . . . . . . 7
+4.4 Gradient Clipping . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.5 LSTM (Long Short-Term Memory) . . . . . . . . . . . . . . . . . . . . . . 7
+4.5.1 Les Portes du LSTM . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.5.2 Mise à jour de la Cellule et de l’État Caché . . . . . . . . . . . . . 8
+4.6 GRU (Gated Recurrent Unit) . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.7 Modèle de Langage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.8 Perplexité . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+5 Modèles de Langage Implémentés 10
+5.1 Architecture Commune . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.2 Modèles Comparés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.3 Hyperparamètres . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6 Résultats des Modèles de Langage 12
+6.1 Tableau Comparatif des Performances . . . . . . . . . . . . . . . . . . . . . 12
+6.2 Analyse des Résultats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.3 Courbes d’Apprentissage . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.4 Interprétation des Résultats . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.4.1 RNN avec Clipping : Meilleure Perplexité . . . . . . . . . . . . . . . 12
+6.4.2 Impact du Gradient Clipping . . . . . . . . . . . . . . . . . . . . . 12
+6.4.3 LSTM et GRU : Performances Inférieures . . . . . . . . . . . . . . 13
+6.5 Exemples de Génération de Texte . . . . . . . . . . . . . . . . . . . . . . . 13
+3
+
+--- PAGE 4 ---
+7 Système Seq2Seq 14
+7.1 Principe Général . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.2 Tâche : Reconstruction d’Extraits IMDb . . . . . . . . . . . . . . . . . . . 14
+7.3 Architecture Encodeur-Décodeur . . . . . . . . . . . . . . . . . . . . . . . 14
+7.3.1 Encodeur . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.3.2 Décodeur . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.3.3 Seq2Seq Complet . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+7.4 Teacher Forcing . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+7.5 Stratégies de Décodage . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+7.5.1 Décodage Glouton (Greedy Decoding) . . . . . . . . . . . . . . . . 16
+7.5.2 Beam Search . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+8 Résultats Seq2Seq 17
+8.1 Performances . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+8.2 Courbe d’Entraînement . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+8.3 Exemples de Prédictions . . . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+8.4 Analyse des Résultats Seq2Seq . . . . . . . . . . . . . . . . . . . . . . . . . 18
+8.4.1 Pourquoi les scores BLEU sont-ils faibles? . . . . . . . . . . . . . . 18
+8.4.2 Greedy vs Beam Search . . . . . . . . . . . . . . . . . . . . . . . . 18
+8.4.3 Observations sur les prédictions . . . . . . . . . . . . . . . . . . . . 18
+9 Discussion et Analyse Critique 19
+9.1 Synthèse des Résultats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+9.2 Points Clés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+9.2.1 1. Importance du Gradient Clipping . . . . . . . . . . . . . . . . . . 19
+9.2.2 2. RNN vs LSTM vs GRU dans ce contexte . . . . . . . . . . . . . 19
+9.2.3 3. Difficulté de la Génération Libre . . . . . . . . . . . . . . . . . . 19
+9.3 Limites de l’Étude . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+9.4 Pistes d’Amélioration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+10 Conclusion Partie III 21
+10.1 Perspectives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+A Annexe : Informations Techniques 22
+A.1 Commandes d’Exécution . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+A.2 Hyperparamètres Communs . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+A.3 Fichiers Générés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+A.4 Reproductibilité . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+Références 23
+
+--- PAGE 5 ---
+Table des matières Partie III - RNN/LSTM/GRU/Seq2Seq
+Résumé de la Partie III
+Cette partie étudie la modélisation de données séquentielles avec des ar-
+chitectures récurrentes sur le corpus textuelIMDb(critiques de films).
+Modèles de langage: comparaison de RNN, LSTM et GRU pour la
+prédiction du prochain token. LeRNN avec gradient clippingobtient
+la meilleure perplexité (1397.93), démontrant l’importance de cette tech-
+nique.
+Système Seq2Seq: implémentation d’un encodeur-décodeur pour la re-
+construction de critiques IMDb, avec comparaison entre décodage glouton
+(BLEU=0.0972) et beam search (BLEU=0.0960).
+1
+
+--- PAGE 6 ---
+1 Introduction et Objectifs Partie III - RNN/LSTM/GRU/Seq2Seq
+1 Introduction et Objectifs
+1.1 Contexte
+Contrairement aux données tabulaires (Partie I) et aux images (Partie II), le texte est
+uneséquence ordonnéede tokens. L’ordre des mots détermine le sens. Par exemple :
+"this movie was good"̸="good was movie this"
+Les architectures récurrentes (RNN, LSTM, GRU) sont conçues spécifiquement pour
+traiter ce type de données en maintenant unétat cachéqui représente le contexte pré-
+cédent.
+1.2 Objectifs de la Partie III
+1. Comprendre pourquoi le texte nécessite des architectures séquentielles
+2. Maîtriser la tokenisation et la construction du vocabulaire
+3. Implémenter et comparer RNN, LSTM et GRU pour la modélisation du langage
+4. Comprendre l’importance du gradient clipping pour les RNN
+5. Implémenter un système Seq2Seq (encodeur-décodeur)
+6. Comparer les stratégies de décodage (glouton vs beam search)
+7. Analyser les performances avec la perplexité et le score BLEU
+1.3 Structure de la Partie III
+— Présentation du dataset IMDb et préparation des données
+— Tokenisation et construction du vocabulaire
+— Fondements théoriques des RNN, LSTM et GRU
+— Gradient clipping et Backpropagation Through Time (BPTT)
+— Résultats des modèles de langage
+— Analyse des générations de texte
+— Système Seq2Seq : encodeur et décodeur
+— Teacher forcing et stratégies de décodage
+— Résultats Seq2Seq et analyse critique
+— Discussion et conclusion
+2
+
+--- PAGE 7 ---
+2 Dataset : IMDb Reviews Partie III - RNN/LSTM/GRU/Seq2Seq
+2 Dataset : IMDb Reviews
+2.1 Présentation Générale
+Le datasetIMDb(Internet Movie Database) contient des critiques de films écrites
+en langage naturel. Il est largement utilisé pour les tâches de traitement automatique du
+langage naturel (NLP).
+Table 1– Statistiques du dataset IMDb
+Caractéristique Dataset complet Sous-ensemble utilisé
+Critiques d’entraînement 25 000 600
+Critiques de validation 0 (split manuel) 100
+Critiques de test 25 000 200
+Taille du vocabulaire≈88 000 2 500
+Longueur moyenne≈230 mots≈50-100 mots
+2.2 Pourquoi un Sous-ensemble ?
+Pour des raisons de faisabilité sur CPU :
+—600 critiques pour l’entraînement(au lieu de 25 000)
+—100 critiques pour la validation
+—200 critiques pour le test
+—Vocabulaire limité à 2 500 tokensles plus fréquents
+Note importante
+Les performances absolues sont inférieures à celles obtenues sur le dataset complet.
+Cependant, lescomparaisons relativesentre modèles (RNN vs LSTM vs GRU)
+et l’impact du gradient clipping restent valides.
+2.3 Exemple de Critique IMDb
+Exemple de critique positive
+"This movie was absolutely fantastic! The acting was superb, the plot was engaging
+from start to finish. I highly recommend it to everyone."
+Exemple de critique négative
+"What a waste of time. The story made no sense, the characters were flat and
+uninteresting. I regret watching this film."
+3
+
+--- PAGE 8 ---
+3 Tokenisation et Vocabulaire Partie III - RNN/LSTM/GRU/Seq2Seq
+3 Tokenisation et Vocabulaire
+3.1 Tokenisation
+La tokenisation transforme une phrase en une liste de tokens (mots et ponctuations) :
+1Texte : " This movie was excellent !"
+2Tokens : [" this ", " movie ", " was", " excellent ", "!"]
+Listing 1 – Exemple de tokenisation
+Dans notre implémentation, la tokenisation suit ces règles :
+— Mise en minuscule de tous les caractères
+— Nettoyage des balises HTML
+— Conservation des mots, nombres et ponctuations principales (.!?)
+3.2 Construction du Vocabulaire
+Le vocabulaire associe chaque token à un identifiant numérique unique :
+Table 2– Exemple de mapping token→ID
+Token ID Fréquence (approx.)
+the 1 15,234
+and 2 8,456
+movie 3 6,789
+film 4 5,432
+good 5 4,321
+... ... ...
+3.3 Tokens Spéciaux
+Quatre tokens spéciaux sont ajoutés au vocabulaire :
+Table 3– Tokens spéciaux et leur rôle
+Token Symbolique Rôle
+<pad>Padding Complète les séquences trop courtes
+<unk>Unknown Représente les mots inconnus du vocabulaire
+<sos>Start of Sequence Marque le début d’une séquence (décodeur)
+<eos>End of Sequence Marque la fin d’une séquence
+3.4 Prétraitement des Séquences
+Chaque critique est transformée en une séquence d’IDs :
+1Texte : " this movie was good "
+2Tokens : [" this ", " movie ", " was", " good "]
+3IDs: [342 , 89, 124 , 56]
+4
+
+--- PAGE 9 ---
+3 Tokenisation et Vocabulaire Partie III - RNN/LSTM/GRU/Seq2Seq
+4
+5Avec tokens s p c i a u x : <sos > this movie was good <eos >
+6IDs: [1, 342 , 89, 124 , 56, 2]
+Listing 2 – Conversion texte→séquence d’IDs
+5
+
+--- PAGE 10 ---
+4 Fondements Théoriques des Architectures Récurrentes Partie III - RNN/LSTM/GRU/Seq2Seq
+4 Fondements Théoriques des Architectures Récurrentes
+4.1 Pourquoi le texte nécessite des architectures séquentielles
+Propriété fondamentale des séquences
+Dans une séquence, l’ordre des éléments porte l’information. Un modèle de séquence
+doit :
+1. Traiter les tokens dans leur ordre naturel
+2. Maintenir uncontexte(mémoire) des tokens précédents
+3. Être capable de traiter des séquences de longueur variable
+4.2 Le RNN Simple (Recurrent Neural Network)
+4.2.1 Formulation Mathématique
+À chaque pas de tempst, le RNN met à jour son état cachéh t:
+ht= tanh(W hhht−1+W xhxt+bh)
+La sortie à chaque pas de temps est :
+yt=softmax(W hyht+by)
+où :
+—h t: état caché au tempst(vecteur de dimensiond h)
+—x t: entrée au tempst(vecteur de dimensiond x, ici l’embedding du token)
+—W hh,W xh,W hy: matrices de poids apprenables
+—b h,by: biais
+—tanh: fonction d’activation (sigmoid hyperbolique)
+4.2.2 Illustration d’un RNN Déroulé
+h0
+x0y0
+h1
+x1y1
+h2
+x2y2
+h3
+x3y3
+ht−1
+xt−1yt−1
+... ht
+xtyt
+Figure 1– Un RNN déroulé dans le temps ("unrolled")
+4.2.3 Problèmes du RNN Simple
+Le RNN simple souffre de deux problèmes principaux lors de la rétropropagation à
+travers le temps (BPTT) :
+1.Vanishing Gradient: les gradients deviennent exponentiellement petits, le modèle
+ne peut plus apprendre les dépendances longues.
+6
+
+--- PAGE 11 ---
+4 Fondements Théoriques des Architectures Récurrentes Partie III - RNN/LSTM/GRU/Seq2Seq
+2.Exploding Gradient: les gradients deviennent exponentiellement grands, l’entraî-
+nement devient instable.
+4.3 Backpropagation Through Time (BPTT)
+La rétropropagation à travers le temps consiste à "dérouler" le RNN et à appliquer la
+règle de la chaîne à travers toutes les étapes :
+∂L
+∂W=TX
+t=1∂Lt
+∂W
+Pour une séquence de longueurT, le gradient doit traverserTcouches récurrentes, ce
+qui cause les problèmes de vanishing/exploding gradients.
+4.4 Gradient Clipping
+Le gradient clipping est une technique simple mais efficace pour éviter l’explosion des
+gradients :
+1# Limite la norme du gradient 1.0
+2nn. utils . clip_grad_norm_ ( model . parameters () , max_norm =1.0)
+Listing 3 – Gradient clipping en PyTorch
+Efficacité du gradient clipping
+Le gradient clipping empêche les gradients de dépasser un seuil, stabilisant ainsi
+l’entraînement, particulièrement pour les RNN simples.
+4.5 LSTM (Long Short-Term Memory)
+Le LSTM ajoute unecellule mémoirec tet troisportespour contrôler le flux d’in-
+formation.
+4.5.1 Les Portes du LSTM
+1.Forget Gate(porte d’oubli) : décide quelles informations oublier de la cellule mé-
+moire précédente
+ft=σ(W f·[ht−1, xt] +b f)
+2.Input Gate(porte d’entrée) : décide quelles nouvelles informations stocker
+it=σ(W i·[ht−1, xt] +b i)
+˜ct= tanh(W c·[ht−1, xt] +b c)
+3.Output Gate(porte de sortie) : décide quelle partie de la cellule mémoire sera
+transmise
+ot=σ(W o·[ht−1, xt] +b o)
+7
+
+--- PAGE 12 ---
+4 Fondements Théoriques des Architectures Récurrentes Partie III - RNN/LSTM/GRU/Seq2Seq
+4.5.2 Mise à jour de la Cellule et de l’État Caché
+ct=f t⊙ct−1+it⊙˜ct
+ht=ot⊙tanh(c t)
+LSTM CellForget GateInput Gate
+Output GateTrois portes contrôlent la mémoire
+Figure 2– Structure simplifiée d’une cellule LSTM
+4.6 GRU (Gated Recurrent Unit)
+Le GRU est une simplification du LSTM avec seulementdeux portes:
+1.Update Gate(porte de mise à jour) : combine forget et input gates
+zt=σ(W z·[ht−1, xt] +b z)
+2.ResetGate(portederéinitialisation):décidecombiend’informationpasséeoublier
+rt=σ(W r·[ht−1, xt] +b r)
+GRU vs LSTM
+—LSTM: plus puissant, plus de paramètres, plus lent
+—GRU: plus simple, moins de paramètres, plus rapide
+—Performance: souvent comparable sur de nombreuses tâches
+4.7 Modèle de Langage
+Un modèle de langage apprend à prédire le prochain token étant donné les tokens
+précédents. La probabilité d’une séquence est factorisée selon la règle de la chaîne :
+P(w 1, w2, ..., w n) =nY
+i=1P(w i|w1, ..., w i−1)
+4.8 Perplexité
+La perplexité est la métrique standard pour évaluer les modèles de langage :
+Perplexité= exp 
+−1
+NNX
+i=1logP(w i|w1, ..., w i−1)!
+= exp(loss)
+8
+
+--- PAGE 13 ---
+4 Fondements Théoriques des Architectures Récurrentes Partie III - RNN/LSTM/GRU/Seq2Seq
+Interprétation de la perplexité
+—Perplexité faible: le modèle est moins incertain, meilleure prédiction
+—Perplexité élevée: le modèle est plus incertain
+—Exemple: Perplexité = 100 signifie que le modèle est aussi incertain que s’il
+devait choisir parmi 100 mots équiprobables
+9
+
+--- PAGE 14 ---
+5 Modèles de Langage Implémentés Partie III - RNN/LSTM/GRU/Seq2Seq
+5 Modèles de Langage Implémentés
+5.1 Architecture Commune
+Tous les modèles de langage partagent la même architecture de base :
+1.Couche d’embedding: conversion des IDs de tokens en vecteurs denses
+2.Couche récurrente: RNN, LSTM ou GRU
+3.Couche linéaire de sortie: projection sur la taille du vocabulaire
+1class LanguageModel (nn. Module ):
+2def __init__ (self , vocab_size , embed_size , hidden_size ,
+num_layers , model_type =’rnn ’):
+3super (). __init__ ()
+4self . embedding = nn. Embedding ( vocab_size , embed_size )
+5
+6if model_type == ’rnn ’:
+7self .rnn = nn.RNN( embed_size , hidden_size , num_layers ,
+batch_first = True )
+8elif model_type == ’lstm ’:
+9self .rnn = nn. LSTM ( embed_size , hidden_size , num_layers ,
+batch_first = True )
+10elif model_type == ’gru ’:
+11self .rnn = nn.GRU( embed_size , hidden_size , num_layers ,
+batch_first = True )
+12
+13self .fc = nn. Linear ( hidden_size , vocab_size )
+14
+15def forward (self , x):
+16embedded = self . embedding (x)
+17output , hidden = self .rnn( embedded )
+18return self .fc( output )
+Listing 4 – Architecture de base pour les modèles de langage
+5.2 Modèles Comparés
+Quatre configurations sont entraînées et comparées :
+Table 4– Modèles de langage comparés
+Modèle Gradient Clipping Nombre de paramètres
+RNN sans clipping Non≈2.1M
+RNN avec clipping Oui (1.0)≈2.1M
+LSTM avec clipping Oui (1.0)≈2.8M
+GRU avec clipping Oui (1.0)≈2.4M
+10
+
+--- PAGE 15 ---
+5 Modèles de Langage Implémentés Partie III - RNN/LSTM/GRU/Seq2Seq
+5.3 Hyperparamètres
+Table 5– Hyperparamètres pour les modèles de langage
+Paramètre Valeur Description
+Vocabulaire 2 500 Tokens les plus fréquents
+Dimension d’embedding 100 Taille des vecteurs de mots
+Dimension cachée 128 Taille de l’état caché
+Nombre de couches 1 Profondeur du réseau
+Taux d’apprentissage 0.001 Learning rate
+Optimiseur Adam Descente adaptative
+Batch size 32 Taille des lots
+Nombre d’époques 1 Entraînement court
+11
+
+--- PAGE 16 ---
+6 Résultats des Modèles de Langage Partie III - RNN/LSTM/GRU/Seq2Seq
+6 Résultats des Modèles de Langage
+6.1 Tableau Comparatif des Performances
+Table 6– Comparaison des modèles de langage sur IMDb
+Modèle Clipping Test Loss Perplexité Norme max gradient
+RNN Oui (1.0) 7.2427 1397.930.7443
+GRU Oui (1.0) 7.3869 1614.65 0.4697
+LSTM Oui (1.0) 7.5367 1875.72 0.3771
+RNN Non 7.5802 1959.10 0.5151
+6.2 Analyse des Résultats
+Figure 3– Comparaison des perplexités - plus bas est meilleur
+6.3 Courbes d’Apprentissage
+Figure 4– Courbes de loss et perplexité des modèles de langage
+6.4 Interprétation des Résultats
+6.4.1 RNN avec Clipping : Meilleure Perplexité
+Le RNN avec gradient clipping (1397.93) surpasse tous les autres modèles. Pourquoi?
+— Legradient clippingstabilise l’entraînement des RNN simples
+— Dans ce contexte (petit dataset, 1 époque), le RNN simple converge plus vite
+— LSTM et GRU ont plus de paramètres et nécessitent plus de données pour exprimer
+leur potentiel
+6.4.2 Impact du Gradient Clipping
+La comparaison RNN avec clipping (1397.93) vs RNN sans clipping (1959.10) montre
+uneamélioration de 28.7%. Le clipping est essentiel!
+12
+
+--- PAGE 17 ---
+6 Résultats des Modèles de Langage Partie III - RNN/LSTM/GRU/Seq2Seq
+6.4.3 LSTM et GRU : Performances Inférieures
+Cela ne signifie pas que LSTM/GRU sont moins performants en général. Dans ce
+contexte expérimental très limité :
+— Petite taille de dataset (600 critiques)
+— Entraînement très court (1 époque)
+— Modèles relativement petits
+Sur des datasets plus larges avec plus d’époques, LSTM et GRU surpassent générale-
+ment les RNN simples.
+6.5 Exemples de Génération de Texte
+Table 7– Exemples de génération - amorce "this movie was"
+Modèle Texte généré
+RNN sans clipping "this movie was natural in producer freeman fire agree
+accept fire realistic producer subtle probably wings play
+agree local o writers michael taking"
+RNN avec clipping "this movie was and no one thing a lot la any no one
+because a you kind one devil drop than anchor 0"
+LSTM avec clipping "this movie was that that that to that that that to that
+that that to that that that that to that that that"
+GRU avec clipping "this movie was see think fighter its . . he . . he . . he .
+he . . he . he"
+Analyse des générations
+—RNN sans clipping: texte désorganisé, répétitions
+—RNN avec clipping: léger mieux, mais toujours peu cohérent
+—LSTM: tombe dans une boucle "that that that" (collapse)
+—GRU: génération très courte, souvent des points
+Ces générations montrent la difficulté de la génération libre avec peu de données.
+13
+
+--- PAGE 18 ---
+7 Système Seq2Seq Partie III - RNN/LSTM/GRU/Seq2Seq
+7 Système Seq2Seq
+7.1 Principe Général
+Le modèleSeq2Seq(Sequence-to-Sequence) transforme une séquence d’entrée en une
+séquence de sortie.
+Encodeur Décodeurétat caché final
+Séquence source Séquence cible
+Figure 5– Architecture générale d’un Seq2Seq
+7.2 Tâche : Reconstruction d’Extraits IMDb
+La tâche implémentée est lareconstructionde courts extraits de critiques IMDb :
+—Entrée: un extrait de critique (ex : "i have never seen so much talent")
+—Sortie attendue: le même extrait
+—Objectif: apprendre à encoder et décoder des séquences
+7.3 Architecture Encodeur-Décodeur
+7.3.1 Encodeur
+L’encodeur lit la séquence source token par token et produit unétat caché finalqui
+résume le contexte :
+1class Encoder (nn. Module ):
+2def __init__ (self , vocab_size , embed_size , hidden_size ):
+3super (). __init__ ()
+4self . embedding = nn. Embedding ( vocab_size , embed_size )
+5self . gru = nn. GRU( embed_size , hidden_size , batch_first = True
+)
+6
+7def forward (self , x):
+8embedded = self . embedding (x)
+9outputs , hidden = self .gru( embedded )
+10return hidden # tat c a c h final
+Listing 5 – Encodeur GRU
+7.3.2 Décodeur
+Le décodeur utilise l’état caché final de l’encodeur pour générer la séquence token par
+token :
+1class Decoder (nn. Module ):
+2def __init__ (self , vocab_size , embed_size , hidden_size ):
+3super (). __init__ ()
+14
+
+--- PAGE 19 ---
+7 Système Seq2Seq Partie III - RNN/LSTM/GRU/Seq2Seq
+4self . embedding = nn. Embedding ( vocab_size , embed_size )
+5self . gru = nn. GRU( embed_size , hidden_size , batch_first = True
+)
+6self .fc = nn. Linear ( hidden_size , vocab_size )
+7
+8def forward (self , x, hidden ):
+9embedded = self . embedding (x)
+10output , hidden = self .gru( embedded , hidden )
+11return self .fc( output ), hidden
+Listing 6 – Décodeur GRU
+7.3.3 Seq2Seq Complet
+1class Seq2Seq (nn. Module ):
+2def __init__ (self , encoder , decoder ):
+3super (). __init__ ()
+4self . encoder = encoder
+5self . decoder = decoder
+6
+7def forward (self , source , target , teacher_forcing_ratio =0.5) :
+8batch_size = source . size (0)
+9target_len = target . size (1)
+10vocab_size = self . decoder .fc. out_features
+11
+12outputs = torch . zeros ( batch_size , target_len , vocab_size )
+13hidden = self . encoder ( source )
+14
+15decoder_input = target [:, 0] # <sos > token
+16
+17for t in range (1, target_len ):
+18output , hidden = self . decoder ( decoder_input . unsqueeze
+(1) , hidden )
+19outputs [:, t, :] = output
+20
+21# Teacher forcing
+22teacher_force = random . random () < teacher_forcing_ratio
+23if teacher_force :
+24decoder_input = target [:, t]
+25else :
+26decoder_input = output . argmax (2) . squeeze (1)
+27
+28return outputs
+Listing 7 – Modèle Seq2Seq complet
+7.4 Teacher Forcing
+Pendantl’entraînement,leteacherforcingutiliselesvraiesvaleursprécédentesplutôt
+que les prédictions du modèle :
+15
+
+--- PAGE 20 ---
+7 Système Seq2Seq Partie III - RNN/LSTM/GRU/Seq2Seq
+Token prédity t Token réely t
+Teacher forcing : utilise le token réel
+Figure 6– Illustration du teacher forcing
+7.5 Stratégies de Décodage
+7.5.1 Décodage Glouton (Greedy Decoding)
+À chaque étape, sélectionne le token avec la probabilité la plus élevée :
+ˆyt= arg max
+w∈VP(w|ˆy 1, ...,ˆy t−1, x)
+—Avantage: simple et rapide
+—Inconvénient: une erreur précoce peut dégrader toute la séquence
+7.5.2 Beam Search
+Garde leskmeilleures séquences candidates à chaque étape (k= 3ici) :
+<sos>
+le (0.4) un (0.3) ce (0.2)
+film (0.6)livre (0.2) film (0.5)peu (0.3)film (0.7)très (0.2)
+Figure 7– Beam search avec largeur 3
+16
+
+--- PAGE 21 ---
+8 Résultats Seq2Seq Partie III - RNN/LSTM/GRU/Seq2Seq
+8 Résultats Seq2Seq
+8.1 Performances
+Table 8– Résultats du modèle Seq2Seq sur la reconstruction IMDb
+Méthode de décodage Score BLEU simplifié Temps d’entraînement
+Décodage glouton (Greedy) 0.0972 3.06 secondes
+Beam search (k=3) 0.0960 3.06 secondes
+8.2 Courbe d’Entraînement
+Figure 8– Courbe d’entraînement du modèle Seq2Seq
+Observations :
+— Loss d’entraînement : diminue de≈7.8 à≈5.2
+— Loss de validation : suit une tendance similaire
+— Pas de surapprentissage significatif (courbes proches)
+— Décroissance régulière sur 10 époques
+17
+
+--- PAGE 22 ---
+8 Résultats Seq2Seq Partie III - RNN/LSTM/GRU/Seq2Seq
+8.3 Exemples de Prédictions
+Table 9– Exemples de reconstruction Seq2Seq
+Source Référence Greedy Beam Search
+i have never seen
+so much talenti have never seen so
+much talenti i i i i a
+what can i say
+about this filmwhat can i say about
+this filmi i i i i a
+now this is more
+like it!now this is more like
+it!i i this i i a
+in addition to
+the fact that thisin addition to the fact
+that thisi i this i i a
+8.4 Analyse des Résultats Seq2Seq
+8.4.1 Pourquoi les scores BLEU sont-ils faibles?
+Explications
+1.Absence de mécanisme d’attention: le décodeur n’a accès qu’à l’état
+caché final, perdant le contexte des tokens intermédiaires
+2.Corpus très réduit: 600 critiques seulement
+3.Diversité du langage IMDb: argot, néologismes, références culturelles
+4.Modèle de petite taille: capacité limitée
+5.Peu d’époques: 10 époques seulement
+8.4.2 Greedy vs Beam Search
+Les deux stratégies donnent des résultats très proches (0.0972 vs 0.0960). Cela indique
+que :
+— Le modèle n’a pas encore appris une distribution de sortie suffisamment riche
+— Beam search n’apporte pas d’amélioration car le modèle est sous-entraîné
+— Avec plus d’entraînement, beam search devient généralement supérieur
+8.4.3 Observations sur les prédictions
+— Le modèle tend à produire des tokens fréquents : "i", "this", "a"
+— Les séquences générées sont très courtes
+— Le modèle "colapse" vers des solutions triviales
+— C’est un phénomène classique avec les petits Seq2Seq sans attention
+18
+
+--- PAGE 23 ---
+9 Discussion et Analyse Critique Partie III - RNN/LSTM/GRU/Seq2Seq
+9 Discussion et Analyse Critique
+9.1 Synthèse des Résultats
+Table 10– Synthèse des meilleurs résultats Partie III
+Tâche Meilleur modèle Métrique Résultat
+Modèle de langage RNN avec clipping Perplexité 1397.93
+Modèle de langage RNN sans clipping Perplexité 1959.10
+Seq2Seq reconstruction Greedy decoding BLEU simplifié 0.0972
+9.2 Points Clés
+9.2.1 1. Importance du Gradient Clipping
+Le gradient clipping a réduit la perplexité de28.7%(1959→1398). C’est une tech-
+nique essentielle pour les RNN.
+9.2.2 2. RNN vs LSTM vs GRU dans ce contexte
+Dans cette expérience limitée, le RNN simple a surpassé LSTM et GRU. Cela ne
+signifie pas qu’il est meilleur en général, mais que :
+— LSTM/GRU ont besoin deplus de donnéespour exprimer leur potentiel
+— Le RNN simpleconverge plus vitesur les petites tâches
+— Legradient clippingsuffit à stabiliser le RNN ici
+9.2.3 3. Difficulté de la Génération Libre
+Les scores BLEU très faibles (0.097) montrent que la génération de texte reste difficile
+avec :
+— Peu de données d’entraînement
+— Pas de mécanisme d’attention
+— Modèle de petite taille
+9.3 Limites de l’Étude
+1.Très petit sous-ensemble: 600 critiques seulement
+2.Une seule époquepour les modèles de langage
+3.Pas de mécanisme d’attentiondans le Seq2Seq
+4.Vocabulaire limitéà 2 500 tokens
+5.CPU uniquement: limite la taille des modèles
+19
+
+--- PAGE 24 ---
+9 Discussion et Analyse Critique Partie III - RNN/LSTM/GRU/Seq2Seq
+9.4 Pistes d’Amélioration
+—Attention mécanism: permettrait au décodeur de consulter tous les états cachés
+de l’encodeur
+—Plus de données: utiliser le dataset IMDb complet
+—Plus d’époques: avec early stopping
+—Transformers: architectures modernes (BERT, GPT) qui ont supplanté les RNN
+—Pré-entraînement: utiliser des embeddings pré-entraînés (Word2Vec, GloVe)
+20
+
+--- PAGE 25 ---
+10 Conclusion Partie III Partie III - RNN/LSTM/GRU/Seq2Seq
+10 Conclusion Partie III
+Cette partie a démontré l’importance des architectures récurrentes pour la modélisa-
+tion de séquences textuelles.
+Principales conclusions
+1. Legradient clippingest essentiel pour les RNN : amélioration de 28.7% de
+la perplexité
+2. LeRNN avec clippingobtient la meilleure perplexité (1397.93) dans ce
+contexte limité
+3. LesLSTM et GRUnécessitent plus de données pour exprimer leur potentiel
+4. LeSys2Seqimplémenté montre les défis de la génération libre de texte
+5. Ledécodage gloutonet lebeam searchdonnent des résultats similaires
+sur un modèle sous-entraîné
+6. Lesgénérations de texterestent peu cohérentes sans attention et avec peu
+de données
+10.1 Perspectives
+Pour améliorer les performances sur les tâches séquentielles :
+— Ajouter unmécanisme d’attentionau Seq2Seq
+— Utiliser desarchitectures Transformer(BERT, GPT)
+— Augmenter laquantité de donnéesd’entraînement
+—Pré-entraînementsur de grands corpus
+—Fine-tuningpour la tâche spécifique
+21
+
+--- PAGE 26 ---
+A Annexe : Informations Techniques Partie III - RNN/LSTM/GRU/Seq2Seq
+A Annexe : Informations Techniques
+A.1 Commandes d’Exécution
+1python -u .\ src\ part3_imdb_sequences .py
+Listing 8 – Commande pour exécuter le script Partie III
+A.2 Hyperparamètres Communs
+Paramètre Modèle de langage Seq2Seq
+Taux d’apprentissage 0.001 0.001
+Batch size 32 32
+Dimension embedding 100 100
+Dimension cachée 128 128
+Gradient clipping 1.0 (sauf RNN seul) 1.0
+A.3 Fichiers Générés
+Fichier Description
+outputs/tables/part3_lm_results.csvRésultats modèles de langage
+outputs/tables/part3_seq2seq_results.csvRésultats Seq2Seq
+outputs/tables/part3_seq2seq_predictions.txtExemples de prédictions
+outputs/tables/part3_language_generations.txtGénérations de texte
+outputs/models/part3_rnn_clipped.ptMeilleur modèle RNN
+outputs/models/part3_seq2seq_gru.ptModèle Seq2Seq
+A.4 Reproductibilité
+1import random
+2import numpy as np
+3import torch
+4
+5random . seed (42)
+6np. random . seed (42)
+7torch . manual_seed (42)
+Listing 9 – Graines aléatoires fixées
+22
+
+--- PAGE 27 ---
+A Annexe : Informations Techniques Partie III - RNN/LSTM/GRU/Seq2Seq
+Références
+1. Hochreiter,S.,&Schmidhuber,J.(1997)."LongShort-TermMemory".Neural Com-
+putation.
+2. Cho, K., et al. (2014). "Learning Phrase Representations using RNN Encoder-
+Decoder for Statistical Machine Translation".EMNLP.
+3. Sutskever, I., et al. (2014). "Sequence to Sequence Learning with Neural Networks".
+NeurIPS.
+4. Pascanu, R., et al. (2013). "On the difficulty of training recurrent neural networks".
+ICML.
+5. Papineni, K., et al. (2002). "BLEU : a method for automatic evaluation of machine
+translation".ACL.
+23

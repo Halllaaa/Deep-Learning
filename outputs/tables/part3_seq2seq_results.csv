@@ -1,0 +1,2 @@
+model,task,greedy_bleu_like_score,beam_search_bleu_like_score,train_time_seconds,model_path
+seq2seq_gru_reconstruction,IMDb review snippet reconstruction,0.09717951801793515,0.09600234067984742,3.058796899858862,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part3_seq2seq_gru.pt

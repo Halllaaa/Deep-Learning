@@ -1,0 +1,7 @@
+model,best_val_accuracy,test_loss,test_accuracy,macro_precision,macro_recall,macro_f1,train_time_seconds,model_path
+cnn_strided,0.811,0.5216220593452454,0.819,0.8258971940203865,0.8227005897850604,0.8219534020563014,22.5472583998926,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part2_cnn_strided.pt
+mlp_flattened_images,0.795,0.5441105098724365,0.805,0.8092848097307662,0.8079367170916785,0.805943669581478,7.864023100119084,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part2_mlp_flattened_images.pt
+cnn_lenet_max_padding,0.773,0.5941857128143311,0.794,0.8173612506880275,0.7984823172172206,0.8006232277750689,16.642249000025913,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part2_cnn_lenet_max_padding.pt
+cnn_with_1x1,0.779,0.5677613592147828,0.791,0.8076031515610321,0.7964402311668397,0.798219059897005,35.05549280019477,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part2_cnn_with_1x1.pt
+cnn_more_filters,0.771,0.5832819228172302,0.773,0.7932997361706626,0.7802164905432026,0.7816169566543477,50.966421799967065,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part2_cnn_more_filters.pt
+cnn_avg_pooling,0.767,0.6180989751815796,0.765,0.7779227540167736,0.7666491080405959,0.7662696851653342,10.227041100151837,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part2_cnn_avg_pooling.pt

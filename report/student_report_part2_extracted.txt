@@ -1,0 +1,827 @@
+
+--- PAGE 1 ---
+Partie II - CNN
+Partie II : CNN et Vision par Ordinateur
+Classification d’Images - Fashion-MNIST
+1
+
+--- PAGE 2 ---
+Rapport Projet Deep Learning
+Auteur: [Votre Nom]
+Cours: Deep Learning
+Date: 31 mai 2026
+31 mai 2026
+
+--- PAGE 3 ---
+Table des matières Partie II - CNN
+Table des matières
+1 Introduction et Objectifs 2
+1.1 Contexte . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.2 Objectifs de la Partie II . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.3 Structure de la Partie II . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+2 Dataset : Fashion-MNIST 3
+2.1 Présentation Générale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.2 Les 10 Classes de Vêtements . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.3 Visualisation des Classes . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.4 Pourquoi un Sous-ensemble? . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+3 Pourquoi un MLP est Limité pour les Images 5
+3.1 Le Problème de l’Aplatissement (Flattening) . . . . . . . . . . . . . . . . . 5
+3.2 Conséquences de l’Aplatissement . . . . . . . . . . . . . . . . . . . . . . . 5
+3.3 Illustration Conceptuelle . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+4 Fondements Théoriques des CNN 6
+4.1 Les Trois Idées Fondamentales . . . . . . . . . . . . . . . . . . . . . . . . . 6
+4.2 Corrélation Croisée 2D (Convolution) . . . . . . . . . . . . . . . . . . . . . 6
+4.3 Formule de la Taille de Sortie . . . . . . . . . . . . . . . . . . . . . . . . . 6
+4.4 Padding . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.5 Stride . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.6 Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.6.1 Max-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.6.2 Average-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.7 Convolution 1×1 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.8 Architecture Hiérarchique des CNN . . . . . . . . . . . . . . . . . . . . . . 8
+5 Vérification Manuelle des Opérations 9
+5.1 Données de Test . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5.2 Résultats de la Vérification . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5.3 Code de Vérification . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+5.4 Vérification des Formules de Taille de Sortie . . . . . . . . . . . . . . . . . 10
+6 Modèles Implémentés 11
+6.1 MLP Baseline (Images Aplaties) . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.2 CNN LeNet avec Max-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.3 CNN avec Average-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+6.4 CNN avec Plus de Filtres . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.5 CNN avec Convolution 1×1 . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.6 CNN Strided (Meilleur Modèle) . . . . . . . . . . . . . . . . . . . . . . . . 13
+7 Résultats Expérimentaux 14
+7.1 Tableau Comparatif des Performances . . . . . . . . . . . . . . . . . . . . . 14
+7.2 Graphique Comparatif . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.3 Interprétation des Résultats . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.3.1 CNN Strided : Meilleur Modèle . . . . . . . . . . . . . . . . . . . . 14
+3
+
+--- PAGE 4 ---
+7.3.2 MLP Baseline : Performance Surprenante . . . . . . . . . . . . . . . 15
+7.3.3 CNN avec Plus de Filtres : Performance Décevante . . . . . . . . . 15
+7.3.4 Average-Pooling vs Max-Pooling . . . . . . . . . . . . . . . . . . . . 15
+7.3.5 Convolution 1×1 : Amélioration Modeste . . . . . . . . . . . . . . . 15
+8 Analyse des Courbes d’Apprentissage 16
+8.1 MLP Baseline . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+8.2 CNN LeNet Max-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+8.3 CNN avec Average-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+8.4 CNN avec Plus de Filtres . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+8.5 CNN avec Convolution 1×1 . . . . . . . . . . . . . . . . . . . . . . . . . . 18
+8.6 CNN Strided (Meilleur Modèle) . . . . . . . . . . . . . . . . . . . . . . . . 18
+9 Matrices de Confusion 19
+9.1 MLP Baseline . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+9.2 CNN LeNet Max-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+9.3 CNN avec Average-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+9.4 CNN Strided (Meilleur Modèle) . . . . . . . . . . . . . . . . . . . . . . . . 22
+9.5 Classes Difficiles : Analyse . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+10 Cartes de Caractéristiques 23
+10.1 CNN LeNet Max-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+10.2 CNN avec Average-Pooling . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+10.3 CNN avec Plus de Filtres . . . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+10.4 CNN avec Convolution 1×1 . . . . . . . . . . . . . . . . . . . . . . . . . . 24
+10.5 CNN Strided (Meilleur Modèle) . . . . . . . . . . . . . . . . . . . . . . . . 24
+10.6 Interprétation Générale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+11 Discussion et Analyse Critique 26
+11.1 Synthèse des Résultats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+11.2 Points Clés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+11.2.1 1. Le CNN est supérieur au MLP pour les images . . . . . . . . . . 26
+11.2.2 2. Le stride appris est meilleur que le pooling fixe . . . . . . . . . . 26
+11.2.3 3. L’augmentation de capacité n’est pas toujours bénéfique . . . . . 26
+11.2.4 4. Les classes visuellement proches sont difficiles . . . . . . . . . . . 26
+11.3 Limites de l’Étude . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+11.4 Pistes d’Amélioration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 27
+12 Conclusion Partie II 28
+12.1 Perspectives . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+A Annexe : Informations Techniques 29
+A.1 Commandes d’Exécution . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+A.2 Hyperparamètres Communs . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+A.3 Fichiers Générés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+A.4 Reproductibilité . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+--- PAGE 5 ---
+Table des matières Partie II - CNN
+Résumé de la Partie II
+Cette partie étudie la classification d’images avec des réseaux de neurones
+convolutionnels (CNN). Le datasetFashion-MNIST(70 000 images,
+28×28 pixels, 10 classes de vêtements) est utilisé. Six modèles sont com-
+parés : MLP baseline, LeNet, average-pooling, plus de filtres, convolution
+1×1, et CNN stridé. LeCNN stridéobtient les meilleures performances
+avec uneaccuracy de 81.9%et unF1 macro de 82.2%.
+1
+
+--- PAGE 6 ---
+1 Introduction et Objectifs Partie II - CNN
+1 Introduction et Objectifs
+1.1 Contexte
+La vision par ordinateur est l’un des domaines où le deep learning a eu l’impact le
+plus spectaculaire. Avant l’avènement des réseaux de neurones convolutionnels (CNN),
+la classification d’images reposait sur des caractéristiques extraites manuellement (SIFT,
+HOG, etc.) combinées à des classifieurs comme les SVM. Les CNN ont révolutionné ce
+domaine en apprenant automatiquement des représentations hiérarchiques des images.
+1.2 Objectifs de la Partie II
+1. Comprendre pourquoi un MLP est limité pour la classification d’images
+2. MaîtriserlesconceptsfondamentauxdesCNN:convolution,padding,stride,pooling
+3. Implémenter plusieurs variantes de CNN sous PyTorch
+4. Comparer l’impact des choix architecturaux sur les performances
+5. Visualiser et interpréter les cartes de caractéristiques
+6. Analyser les classes difficiles à classifier
+1.3 Structure de la Partie II
+— Présentation du dataset Fashion-MNIST
+— Limites du MLP pour les images (démonstration théorique)
+— Fondements théoriques des CNN
+— Vérification manuelle des opérations
+— Présentation des 6 modèles implémentés
+— Résultats expérimentaux détaillés
+— Analyse des courbes d’apprentissage
+— Interprétation des matrices de confusion
+— Visualisation des cartes de caractéristiques
+— Discussion et conclusion
+2
+
+--- PAGE 7 ---
+2 Dataset : Fashion-MNIST Partie II - CNN
+2 Dataset : Fashion-MNIST
+2.1 Présentation Générale
+Fashion-MNIST est un dataset de référence en vision par ordinateur, créé par Zalando
+Research pour remplacer l’historique dataset MNIST (chiffres manuscrits). Il est conçu
+pour être un benchmark plus difficile et plus réaliste.
+Table 1– Statistiques du dataset Fashion-MNIST
+Caractéristique Dataset complet Sous-ensemble utilisé
+Images d’entraînement 60 000 4 000
+Images de validation 0 (split manuel) 1 000
+Images de test 10 000 1 000
+Format des images 28×28 pixels 28×28 pixels
+Nombre de canaux 1 (niveaux de gris) 1
+Nombre de classes 10 10
+Taille totale 70 000 images 6 000 images
+2.2 Les 10 Classes de Vêtements
+Table 2– Les 10 classes de Fashion-MNIST
+ID Classe Description
+0 T-shirt/top Haut à manches courtes
+1 Trouser Pantalon long
+2 Pullover Pull ou sweat à capuche
+3 Dress Robe
+4 Coat Manteau
+5 Sandal Sandale
+6 Shirt Chemise
+7 Sneaker Basket
+8 Bag Sac
+9 Ankle boot Bottine
+2.3 Visualisation des Classes
+(a) T-shirt (b) Trouser (c) Pullover (d) Dress (e) Coat
+Figure 1– Exemples conceptuels des 5 premières classes
+2.4 Pourquoi un Sous-ensemble?
+Pour des raisons de faisabilité sur CPU (ordinateur portable), nous utilisons un sous-
+ensemble réduit :
+3
+
+--- PAGE 8 ---
+2 Dataset : Fashion-MNIST Partie II - CNN
+—4 000 images pour l’entraînement(au lieu de 60 000)
+—1 000 images pour la validation
+—1 000 images pour le test
+Cette réduction permet :
+— Un entraînement rapide (quelques minutes au lieu de plusieurs heures)
+— Une exécution sur CPU sans matériel spécialisé
+— Une comparaison équitable entre les modèles
+Note importante
+Les performances absolues sont légèrement inférieures à celles obtenues sur le data-
+set complet. Cependant, lescomparaisons relativesentre modèles restent valides
+et informatives.
+4
+
+--- PAGE 9 ---
+3 Pourquoi un MLP est Limité pour les Images Partie II - CNN
+3 Pourquoi un MLP est Limité pour les Images
+3.1 Le Problème de l’Aplatissement (Flattening)
+Un MLP appliqué à une image nécessite de transformer la matrice 2D en vecteur 1D :
+Image28×28flatten− − − →Vecteur de784valeurs
+p0,0
+p0,1
+p0,2
+p0,3p1,0
+p1,1
+p1,2
+p1,3p2,0
+p2,1
+p2,2
+p2,3p3,0
+p3,1
+p3,2
+p3,3FlattenVecteur de 784 valeurs
+Figure 2– Opération d’aplatissement : destruction de la structure spatiale
+3.2 Conséquences de l’Aplatissement
+1.Perte de la localité: Deux pixels voisins dans l’image deviennent des positions
+arbitraires dans le vecteur. Le MLP ne sait pas naturellement qu’ils sont proches.
+2.Explosion du nombre de paramètres: Pour connecter 784 entrées à une pre-
+mière couche cachée de 128 neurones :
+784×128 = 100 352paramètres (juste pour une couche!)
+3.Absence d’invariance translationnelle: Un MLP doit réapprendre le même
+motif à chaque position de l’image.
+4.Ignorance de la structure 2D: Les motifs visuels sont naturellement locaux
+(bords, textures). Le MLP ne tire pas parti de cette propriété.
+3.3 Illustration Conceptuelle
+5
+
+--- PAGE 10 ---
+4 Fondements Théoriques des CNN Partie II - CNN
+4 Fondements Théoriques des CNN
+4.1 Les Trois Idées Fondamentales
+Les 3 piliers des CNN
+1.Localité: Un filtre analyse une petite région à la fois (ex : 3×3 ou 5×5)
+2.Partage des poids: Le même filtre est appliqué partout dans l’image
+3.Hiérarchie: Les couches profondes combinent les motifs simples en motifs
+complexes
+4.2 Corrélation Croisée 2D (Convolution)
+L’opération fondamentale d’un CNN est la corrélation croisée (souvent appelée convo-
+lution dans les bibliothèques) :
+(I∗K)(i, j) =k−1X
+m=0k−1X
+n=0I(i+m, j+n)·K(m, n)
+oùIest l’image d’entrée,Kle noyau (filtre), etkla taille du noyau.
+Image 5×5
+Noyau 2×2 Sortie 2×2
+Figure 4– Opération de corrélation croisée 2D
+4.3 Formule de la Taille de Sortie
+Pour une entrée de taillen, un noyau de taillek, un paddingpet un strides:
+sortie=n+ 2p−k
+s
++ 1
+6
+
+--- PAGE 11 ---
+4 Fondements Théoriques des CNN Partie II - CNN
+Table 3– Exemples de calcul de taille de sortie (image 28×28)
+n k p sCalcul
+Sortie
+28 5 0 1⌊(28 + 0−5)/1⌋+ 1 = 23 + 1
+24×24
+28 5 2 1⌊(28 + 4−5)/1⌋+ 1 = 27 + 1
+28×28
+28 3 1 2⌊(28 + 2−3)/2⌋+ 1 = 13 + 1
+14×14
+4.4 Padding
+Le padding ajoute des pixels autour de l’image :
+Image
+(a) Sans padding (p=0)Image
+(b) Padding 1 (p=1)Image
+(c) Padding 2 (p=2)
+Figure 5– Illustration du padding autour d’une image
+4.5 Stride
+Le stride contrôle le déplacement du filtre :
+(a) Stride = 1 (déplacement d’1 pixel) (b) Stride = 2 (déplacement de 2 pixels)
+Figure 6– Effet du stride sur le déplacement du filtre
+4.6 Pooling
+Le pooling réduit la dimension spatiale des cartes de caractéristiques :
+4.6.1 Max-Pooling
+MaxPool(x) = max
+i∈fenêtrexi
+7
+
+--- PAGE 12 ---
+4 Fondements Théoriques des CNN Partie II - CNN
+4.6.2 Average-Pooling
+AvgPool(x) =1
+|fenêtre|X
+i∈fenêtrexi
+Max : 6
+(a) Max-pooling (fenêtre 2×2, stride 2)Moyenne : 3.5
+(b) Average-pooling
+Figure 7– Comparaison max-pooling vs average-pooling
+4.7 Convolution 1×1
+Une convolution 1×1 n’a pas de contexte spatial. Elle sert à :
+—Recombiner les canaux: créer des combinaisons linéaires des cartes de caracté-
+ristiques
+—Changer le nombre de canaux: réduire ou augmenter la profondeur
+—Ajouter de la non-linéarité: suivie d’une activation ReLU
+Conv1x1(x) =W·x+b, W∈RCout×Cin
+4.8 Architecture Hiérarchique des CNN
+Image 28×28 Conv1 3×3 PoolingConv2 3×3 Pooling FCSortie (10)
+Bords TextureFormes simples MotifsObjets partiels Classification
+Figure 8– Architecture hiérarchique typique d’un CNN
+8
+
+--- PAGE 13 ---
+5 Vérification Manuelle des Opérations Partie II - CNN
+5 Vérification Manuelle des Opérations
+Pour valider notre compréhension des concepts, nous avons implémenté manuellement
+les opérations et comparé avec PyTorch.
+5.1 Données de Test
+—Matrice d’entrée: matrice4×4
+
+1 2 3 4
+5 6 7 8
+9 10 11 12
+13 14 15 16
+
+—Noyau de convolution: matrice2×2
+1 0
+0−1
+5.2 Résultats de la Vérification
+Table 4– Comparaison des implémentations manuelles vs PyTorch
+Opération Résultat Identique à PyTorch?
+Corrélation croisée 2D
+−5−5−5
+−5−5−5
+−5−5−5
+ ✓Oui
+Max-pooling (2×2, stride 2)6 8
+14 16
+✓Oui
+Average-pooling (2×2, stride 2)3.5 5.5
+11.5 13.5
+✓Oui
+Résultat de la vérification
+Les implémentations manuelles donnent exactement les mêmes résultats que les
+fonctions PyTorc h (conv2d,MaxPool2d,AvgPool2d), confirmant la bonne compré-
+hension des concepts théoriques.
+5.3 Code de Vérification
+1def manual_cross_correlation_2d (image , kernel ):
+2h_img , w_img = image . shape
+3h_kernel , w_kernel = kernel . shape
+4h_out = h_img - h_kernel + 1
+5w_out = w_img - w_kernel + 1
+6
+7output = torch . zeros (( h_out , w_out ))
+9
+
+--- PAGE 14 ---
+5 Vérification Manuelle des Opérations Partie II - CNN
+8for i in range ( h_out ):
+9for j in range ( w_out ):
+10output [i, j] = ( image [i:i+ h_kernel , j:j+ w_kernel ] *
+kernel ).sum ()
+11return output
+Listing 1 – Implémentation manuelle de la corrélation croisée
+5.4 Vérification des Formules de Taille de Sortie
+Table 5– Vérification des calculs de taille de sortie pour image 28×28
+n k p sCalcul Sortie
+28 5 0 1⌊(28 + 0−5)/1⌋+ 1 = 23 + 1 24×24
+28 5 2 1⌊(28 + 4−5)/1⌋+ 1 = 27 + 1 28×28
+28 3 1 2⌊(28 + 2−3)/2⌋+ 1 = 13 + 1 14×14
+10
+
+--- PAGE 15 ---
+6 Modèles Implémentés Partie II - CNN
+6 Modèles Implémentés
+6.1 MLP Baseline (Images Aplaties)
+1class MLPFlattened (nn. Module ):
+2def __init__ ( self ):
+3super (). __init__ ()
+4self . flatten = nn. Flatten ()
+5self . fc1 = nn. Linear (28*28 , 128)
+6self . fc2 = nn. Linear (128 , 64)
+7self . fc3 = nn. Linear (64 , 10)
+8self . relu = nn. ReLU ()
+9self . dropout = nn. Dropout (0.2)
+10
+11def forward (self , x):
+12x = self . flatten (x) # 28*28 = 784
+13x = self . relu ( self . fc1(x))
+14x = self . dropout (x)
+15x = self . relu ( self . fc2(x))
+16x = self . dropout (x)
+17return self .fc3(x)
+Listing 2 – MLP sur images aplaties - baseline
+6.2 CNN LeNet avec Max-Pooling
+1class CNNLeNetMaxPool (nn. Module ):
+2def __init__ ( self ):
+3super (). __init__ ()
+4self . conv1 = nn. Conv2d (1, 8, kernel_size =3, padding =1)
+5self . conv2 = nn. Conv2d (8, 16, kernel_size =3, padding =1)
+6self . pool = nn. MaxPool2d (2, 2)
+7self . fc1 = nn. Linear (16 * 7 * 7, 64)
+8self . fc2 = nn. Linear (64 , 10)
+9self . relu = nn. ReLU ()
+10self . dropout = nn. Dropout (0.2)
+11
+12def forward (self , x):
+13x = self . pool ( self . relu ( self . conv1 (x))) # 28 - >14
+14x = self . pool ( self . relu ( self . conv2 (x))) # 14->7
+15x = x. view (-1, 16 * 7 * 7)
+16x = self . relu ( self . fc1(x))
+17x = self . dropout (x)
+18return self .fc2(x)
+Listing 3 – CNN inspiré de LeNet avec max-pooling
+6.3 CNN avec Average-Pooling
+11
+
+--- PAGE 16 ---
+6 Modèles Implémentés Partie II - CNN
+1class CNNAvgPooling (nn. Module ):
+2def __init__ ( self ):
+3super (). __init__ ()
+4self . conv1 = nn. Conv2d (1, 8, kernel_size =3, padding =1)
+5self . conv2 = nn. Conv2d (8, 16, kernel_size =3, padding =1)
+6self . pool = nn. AvgPool2d (2, 2) # Average au lieu de Max
+7self . fc1 = nn. Linear (16 * 7 * 7, 64)
+8self . fc2 = nn. Linear (64 , 10)
+9self . relu = nn. ReLU ()
+10self . dropout = nn. Dropout (0.2)
+11
+12def forward (self , x):
+13x = self . pool ( self . relu ( self . conv1 (x)))
+14x = self . pool ( self . relu ( self . conv2 (x)))
+15x = x. view (-1, 16 * 7 * 7)
+16x = self . relu ( self . fc1(x))
+17x = self . dropout (x)
+18return self .fc2(x)
+Listing 4 – CNN avec average-pooling
+6.4 CNN avec Plus de Filtres
+1class CNNMoreFilters (nn. Module ):
+2def __init__ ( self ):
+3super (). __init__ ()
+4# Plus de filtres pour plus de c a p a c i t
+5self . conv1 = nn. Conv2d (1, 32, kernel_size =3, padding =1)
+6self . conv2 = nn. Conv2d (32 , 64, kernel_size =3, padding =1)
+7self . pool = nn. MaxPool2d (2, 2)
+8self . fc1 = nn. Linear (64 * 7 * 7, 128)
+9self . fc2 = nn. Linear (128 , 10)
+10self . relu = nn. ReLU ()
+11self . dropout = nn. Dropout (0.3)
+12
+13def forward (self , x):
+14x = self . pool ( self . relu ( self . conv1 (x))) # 28 - >14
+15x = self . pool ( self . relu ( self . conv2 (x))) # 14->7
+16x = x. view (-1, 64 * 7 * 7)
+17x = self . relu ( self . fc1(x))
+18x = self . dropout (x)
+19return self .fc2(x)
+Listing 5 – CNN avec capacité augmentée (plus de filtres)
+6.5 CNN avec Convolution 1×1
+1class CNNWith1x1 (nn. Module ):
+2def __init__ ( self ):
+12
+
+--- PAGE 17 ---
+6 Modèles Implémentés Partie II - CNN
+3super (). __init__ ()
+4self . conv1 = nn. Conv2d (1, 8, kernel_size =3, padding =1)
+5self . conv1x1 = nn. Conv2d (8, 8, kernel_size =1) # 1x1
+convolution
+6self . conv2 = nn. Conv2d (8, 16, kernel_size =3, padding =1)
+7self . pool = nn. MaxPool2d (2, 2)
+8self . fc1 = nn. Linear (16 * 7 * 7, 64)
+9self . fc2 = nn. Linear (64 , 10)
+10self . relu = nn. ReLU ()
+11
+12def forward (self , x):
+13x = self . pool ( self . relu ( self . conv1 (x)))
+14x = self . relu ( self . conv1x1 (x)) # 1x1 pour recombiner les
+canaux
+15x = self . pool ( self . relu ( self . conv2 (x)))
+16x = x. view (-1, 16 * 7 * 7)
+17x = self . relu ( self . fc1(x))
+18return self .fc2(x)
+Listing 6 – CNN avec couche de convolution 1×1
+6.6 CNN Strided (Meilleur Modèle)
+1class CNNStrided (nn. Module ):
+2def __init__ ( self ):
+3super (). __init__ ()
+4# Utilisation du stride au lieu du pooling
+5self . conv1 = nn. Conv2d (1, 8, kernel_size =3, stride =2,
+padding =1) # 28 - >14
+6self . conv2 = nn. Conv2d (8, 16, kernel_size =3, stride =2,
+padding =1) # 14 ->7
+7self . conv3 = nn. Conv2d (16 , 32, kernel_size =3, padding =1)
+8self . fc1 = nn. Linear (32 * 7 * 7, 64)
+9self . fc2 = nn. Linear (64 , 10)
+10self . relu = nn. ReLU ()
+11self . dropout = nn. Dropout (0.2)
+12
+13def forward (self , x):
+14x = self . relu ( self . conv1 (x)) # 28 x28 -> 14 x14 ( stride 2)
+15x = self . relu ( self . conv2 (x)) # 14 x14 -> 7x7 ( stride 2)
+16x = self . relu ( self . conv3 (x)) # 7x7 -> 7x7
+17x = x. view (-1, 32 * 7 * 7)
+18x = self . relu ( self . fc1(x))
+19x = self . dropout (x)
+20return self .fc2(x)
+Listing 7 – CNN utilisant le stride pour la réduction spatiale
+13
+
+--- PAGE 18 ---
+7 Résultats Expérimentaux Partie II - CNN
+7 Résultats Expérimentaux
+7.1 Tableau Comparatif des Performances
+Table 6– Comparaison des 6 modèles sur l’ensemble de test Fashion-MNIST
+Modèle Accuracy Précision Macro Rappel Macro F1 Macro
+CNN Strided 0.81900.8259 0.82270.8220
+MLP Flattened 0.8050 0.8093 0.8079 0.8059
+CNN LeNet MaxPool 0.7940 0.8174 0.7985 0.8006
+CNN 1×1 0.7910 0.8076 0.7964 0.7982
+CNN More Filters 0.7730 0.7933 0.7802 0.7816
+CNN Avg Pooling 0.7650 0.7779 0.7666 0.7663
+7.2 Graphique Comparatif
+Table 7– Accuracy des 6 modèles sur Fashion-MNIST
+Modèle Accuracy
+CNN Strided81.90%
+MLP Flattened 80.50%
+CNN LeNet MaxPool 79.40%
+CNN 1×1 79.10%
+CNN More Filters 77.30%
+CNN Avg Pooling 76.50%
+CNN Strided (81.90%)
+MLP Flattened (80.50%)
+CNN LeNet (79.40%)
+CNN 1×1 (79.10%)
+CNN More Filters (77.30%)
+CNN Avg Pooling (76.50%)
+7.3 Interprétation des Résultats
+7.3.1 CNN Strided : Meilleur Modèle
+LeCNNstridésurpassetouslesautresmodèlesavecuneaccuracyde81.9%.Pourquoi?
+— Lestride apprisest plus flexible que le pooling fixe
+— La réduction spatiale est intégrée dans les convolutions
+— Moins de perte d’information qu’avec le max-pooling
+14
+
+--- PAGE 19 ---
+7 Résultats Expérimentaux Partie II - CNN
+7.3.2 MLP Baseline : Performance Surprenante
+Le MLP atteint 80.5%, ce qui est compétitif. Cela montre que :
+— Fashion-MNIST est un dataset relativement simple
+— Le MLP peut apprendre des motifs malgré l’aplatissement
+— Mais il a besoin de plus de paramètres et de plus d’époques
+7.3.3 CNN avec Plus de Filtres : Performance Décevante
+L’augmentation du nombre de filtres (32→64) n’a pas amélioré les performances. Ex-
+plications :
+—Surapprentissagepossible sur le petit sous-ensemble
+—Filtres morts: certains filtres ne s’activent jamais (visible dans les cartes)
+— Plus de paramètres ne signifie pas meilleure généralisation
+7.3.4 Average-Pooling vs Max-Pooling
+L’average-pooling (76.5%) est moins performant que le max-pooling (79.4%). Expli-
+cation :
+— Le max-pooling conserve les activations fortes (bords, motifs discriminants)
+— L’average-pooling lisse trop l’information, perdant des détails importants
+7.3.5 Convolution 1×1 : Amélioration Modeste
+La convolution 1×1 apporte une légère amélioration (79.1% vs 79.4% pour LeNet).
+— Permet la recombinaison non linéaire des canaux
+— Effet limité sur ce dataset simple
+15
+
+--- PAGE 20 ---
+8 Analyse des Courbes d’Apprentissage Partie II - CNN
+8 Analyse des Courbes d’Apprentissage
+8.1 MLP Baseline
+Figure 9– Courbes d’entraînement - MLP sur images aplaties
+Observations :
+— Entraînement sur seulement 3 époques (axe des x limité)
+— Validation accuracy≈77.8%en progression
+— Loss train descend plus vite que validation loss→début de surapprentissage
+8.2 CNN LeNet Max-Pooling
+Figure 10– Courbes d’entraînement - CNN LeNet Max Pooling
+Observations :
+— 6 époques d’entraînement
+— Loss diminue régulièrement
+— Pas de surapprentissage prononcé (courbes proches)
+— Accuracy validation≈75−77%
+16
+
+--- PAGE 21 ---
+8 Analyse des Courbes d’Apprentissage Partie II - CNN
+8.3 CNN avec Average-Pooling
+Figure 11– Courbes d’entraînement - CNN Average Pooling
+Observations :
+— Progression similaire à LeNet
+— Accuracy validation≈76.5%
+— Convergence légèrement moins stable
+8.4 CNN avec Plus de Filtres
+Figure 12– Courbes d’entraînement - CNN More Filters
+Observations :
+— Divergence train/validation loss→surapprentissage
+— Accuracy validation≈77.3%(proche du MLP)
+— L’augmentation de capacité n’a pas aidé
+17
+
+--- PAGE 22 ---
+8 Analyse des Courbes d’Apprentissage Partie II - CNN
+8.5 CNN avec Convolution 1×1
+Figure 13– Courbes d’entraînement - CNN avec Convolution 1×1
+Observations :
+— Convergence régulière
+— Accuracy validation≈79.1%
+— Légère amélioration par rapport à LeNet
+8.6 CNN Strided (Meilleur Modèle)
+Figure 14– Courbes d’entraînement - CNN Strided (meilleur modèle)
+Observations :
+— Progression la plus régulière
+— Courbes train/validation très proches→excellent contrôle du surapprentissage
+— Accuracy validation≈81.9%(meilleur score)
+— Convergence rapide (dès l’époque 3-4)
+18
+
+--- PAGE 23 ---
+9 Matrices de Confusion Partie II - CNN
+9 Matrices de Confusion
+9.1 MLP Baseline
+Figure 15– Matrice de confusion - MLP sur images aplaties
+Constatations :
+—Shirt(classe 6) très mal classée : 52 corrects sur 97
+— Confusions principales : Shirt avec T-shirt (24 erreurs), Pullover (16 erreurs)
+—TrouseretBagbien classés (≈90%+)
+— Ces confusions sont visuellement justifiées (formes similaires)
+19
+
+--- PAGE 24 ---
+9 Matrices de Confusion Partie II - CNN
+9.2 CNN LeNet Max-Pooling
+Figure 16– Matrice de confusion - CNN LeNet Max Pooling
+Constatations :
+— Amélioration sur Shirt par rapport au MLP
+— Confusions toujours importantes entre Pullover/Coat/Shirt
+— Trouser : 103/105 corrects (excellent)
+— Ankle boot : 91/95 corrects
+20
+
+--- PAGE 25 ---
+9 Matrices de Confusion Partie II - CNN
+9.3 CNN avec Average-Pooling
+Figure 17– Matrice de confusion - CNN Average Pooling
+Constatations :
+— Pullover amélioré (86/111 vs 74/111 pour LeNet)
+— Sandal moins bien classé (66/87)
+— Trade-off : meilleur sur certaines classes, moins bon sur d’autres
+21
+
+--- PAGE 26 ---
+9 Matrices de Confusion Partie II - CNN
+9.4 CNN Strided (Meilleur Modèle)
+Figure 18– Matrice de confusion - CNN Strided (meilleur modèle)
+Constatations :
+— Coat : 84/115 (meilleur score pour cette classe)
+— Dress : 79/93 (excellent)
+— Shirt : 63/97 (encore difficile mais meilleur que les autres)
+— Sandal : 71/87 (peu de confusion avec Sneaker)
+— Performances globalement meilleures sur toutes les classes
+9.5 Classes Difficiles : Analyse
+Table 8– Classes les plus difficiles à classifier
+Classe Meilleur modèle Taux d’erreur Raisons
+Shirt (classe 6) CNN Strided≈35%Forme similaire à T-shirt et Pullover
+Pullover (classe 2) CNN Strided≈30%Confusion avec Coat et Shirt
+Coat (classe 4) CNN Strided≈27%Confusion avec Pullover
+Ces trois classes (Shirt, Pullover, Coat) sont visuellement très proches :
+— Même silhouette de base (haut du corps)
+— Se distinguent par des détails fins (manches, col, matière)
+— Images 28×28 en niveaux de gris manquent de résolution pour ces détails
+22
+
+--- PAGE 27 ---
+10 Cartes de Caractéristiques Partie II - CNN
+10 Cartes de Caractéristiques
+Les cartes de caractéristiques montrent ce que les filtres CNN détectent dans une
+image. Voici l’analyse pour une image de typeAnkle boot (bottine).
+10.1 CNN LeNet Max-Pooling
+Figure 19– Cartes de caractéristiques - CNN LeNet (image : Ankle boot)
+Interprétation :
+—Map 3: réagit fortement aux zones claires (semelle?)
+—Map 4: détecte le bas de la chaussure
+— Chaque filtre capture un aspect différent de la forme
+— Les cartes montrent une bonne spécialisation des filtres
+10.2 CNN avec Average-Pooling
+Figure 20– Cartes de caractéristiques - CNN Average Pooling
+Interprétation :
+— Cartes pluslissesque le max-pooling
+— Moins de zones jaunes isolées (activations maximales)
+— Perte de détails fins
+— Confirme visuellement l’effet de lissage de l’average-pooling
+23
+
+--- PAGE 28 ---
+10 Cartes de Caractéristiques Partie II - CNN
+10.3 CNN avec Plus de Filtres
+Figure 21– Cartes de caractéristiques - CNN More Filters
+Observation critique :
+—Map 2 et 3 : quasi uniformément sombres(activation nulle)
+— Ce sont desfiltres morts(dead filters)
+— Problème fréquent quand on ajoute trop de filtres
+— Explique pourquoi plus de filtres n’a pas amélioré les performances
+10.4 CNN avec Convolution 1×1
+Figure 22– Cartes de caractéristiques - CNN avec Convolution 1×1
+Interprétation :
+— Cartes bien différenciées
+— Patterns nettement distincts entre les filtres
+— La convolution 1×1 semble favoriser la spécialisation
+10.5 CNN Strided (Meilleur Modèle)
+Figure 23– Cartes de caractéristiques - CNN Strided (meilleur modèle)
+24
+
+--- PAGE 29 ---
+10 Cartes de Caractéristiques Partie II - CNN
+Interprétation :
+— Cartes visuellement lesplus riches en information
+— Patterns haute fréquence dans Map 1 et 3 (bords fins)
+— Patterns basse fréquence dans Map 2 (zones globales)
+— Map 4 : réaction forte à la partie supérieure (tige de la bottine)
+—Grande diversité de réponses→meilleures performances
+10.6 Interprétation Générale
+Les cartes de caractéristiques révèlent :
+1. Les CNN apprennent desdétecteurs de motifsspécialisés
+2. Les premières couches détectent desbords et textures
+3.Max-poolingconserve les activations fortes
+4.Average-poolinglisse l’information
+5.Trop de filtrespeut créer des filtres morts
+6. Lestride apprisproduit les représentations les plus riches
+25
+
+--- PAGE 30 ---
+11 Discussion et Analyse Critique Partie II - CNN
+11 Discussion et Analyse Critique
+11.1 Synthèse des Résultats
+Table 9– Classement final des modèles
+Rang Modèle Accuracy
+1 CNN Strided 81.90%
+2 MLP Flattened 80.50%
+3 CNN LeNet MaxPool 79.40%
+4 CNN 1×1 79.10%
+5 CNN More Filters 77.30%
+6 CNN Avg Pooling 76.50%
+11.2 Points Clés
+11.2.1 1. Le CNN est supérieur au MLP pour les images
+Même sur un dataset relativement simple comme Fashion-MNIST, le meilleur CNN
+(81.9%)surpasseleMLP(80.5%).L’écartseraitplusgrandsurdesimagespluscomplexes.
+11.2.2 2. Le stride appris est meilleur que le pooling fixe
+Le CNN stridé (sans pooling explicite) est le meilleur modèle. Pourquoi?
+— Le réseauapprendcomment réduire la résolution
+— Plus flexible que max-pooling ou average-pooling
+— Moins de perte d’information
+11.2.3 3. L’augmentation de capacité n’est pas toujours bénéfique
+Le modèle "More Filters" (32→64 filtres) a des performances décevantes (77.3%).
+— Surapprentissage sur le petit dataset
+— Filtres morts visibles dans les cartes
+— Rappel : plus de paramètres̸=meilleure généralisation
+11.2.4 4. Les classes visuellement proches sont difficiles
+Shirt, Pullover, Coat forment un cluster difficile :
+— Même silhouette générale
+— Résolution 28×28 insuffisante pour les détails
+— Niveaux de gris uniquement (pas de couleur)
+26
+
+--- PAGE 31 ---
+11 Discussion et Analyse Critique Partie II - CNN
+11.3 Limites de l’Étude
+1.Sous-ensemble réduit: 4 000 images au lieu de 60 000
+2.Peu d’époques: 6 époques maximum
+3.Pas d’optimisation des hyperparamètres
+4.Absence de techniques avancées: batch norm, data augmentation
+5.CPU uniquement: limite la taille des modèles
+11.4 Pistes d’Amélioration
+—Data augmentation: rotations, translations, zoom pour augmenter le dataset
+—Batch normalization: stabilise l’apprentissage
+—Plus d’époques: les courbes n’ont pas encore stagné
+—Architectures plus profondes: ResNet, DenseNet
+—Transfer learning: utiliser des modèles pré-entraînés
+27
+
+--- PAGE 32 ---
+12 Conclusion Partie II Partie II - CNN
+12 Conclusion Partie II
+Cette partie a démontré l’efficacité des réseaux de neurones convolutionnels pour la
+classification d’images.
+Principales conclusions
+1. LeCNN stridéest le meilleur modèle avec 81.9% d’accuracy
+2. LeMLPreste compétitif sur Fashion-MNIST (80.5%) mais moins performant
+3. Lemax-pooling(79.4%) est supérieur à l’**average-pooling** (76.5%)
+4.Plus de filtres n’est pas toujours mieux(surapprentissage, filtres morts)
+5. Laconvolution 1×1apporte une amélioration modeste (+0.3%)
+6. Les classesShirt, Pullover, Coatsont les plus difficiles à distinguer
+12.1 Perspectives
+Ce travail pourrait être étendu de plusieurs façons :
+— Utiliser le dataset complet de 60 000 images
+— Implémenter des architectures plus modernes (ResNet, EfficientNet)
+— Ajouter de l’augmentation de données pour améliorer la généralisation
+— Visualiser les gradients pour comprendre les décisions du modèle
+— Comparer avec des approches non basées sur le deep learning (HOG+SVM)
+28
+
+--- PAGE 33 ---
+A Annexe : Informations Techniques Partie II - CNN
+A Annexe : Informations Techniques
+A.1 Commandes d’Exécution
+1python .\ src\ part2_cnn_images .py
+Listing 8 – Commande pour exécuter le script Partie II
+A.2 Hyperparamètres Communs
+Paramètre Valeur Description
+Learning rate 0.001 Taux d’apprentissage
+Optimiseur Adam Descente de gradient adaptative
+Batch size 32 Taille des lots
+Loss function CrossEntropyLoss Pour classification
+Dropout 0.2-0.3 Régularisation
+A.3 Fichiers Générés
+Fichier Description
+outputs/tables/part2_cnn_results.csvRésultats complets
+outputs/models/part2_cnn_strided.ptMeilleur modèle
+outputs/figures/part2_cnn_strided_training_curves.pngCourbes
+outputs/figures/part2_cnn_strided_confusion_matrix.pngMatrice
+outputs/figures/part2_cnn_strided_feature_maps.pngCartes
+A.4 Reproductibilité
+1import random
+2import numpy as np
+3import torch
+4
+5random . seed (42)
+6np. random . seed (42)
+7torch . manual_seed (42)
+Listing 9 – Graines aléatoires fixées
+29

@@ -1,0 +1,47 @@
+Example 1
+Source:    i have never seen so much talent
+Reference: i have never seen so much talent
+Greedy:    i i i
+Beam:      i i a
+
+Example 2
+Source:    what can i say about this film
+Reference: what can i say about this film
+Greedy:    i i i
+Beam:      i i a
+
+Example 3
+Source:    now this is more like it !
+Reference: now this is more like it !
+Greedy:    i i this
+Beam:      i i a
+
+Example 4
+Source:    in addition to the fact that this
+Reference: in addition to the fact that this
+Greedy:    i i this
+Beam:      i i a
+
+Example 5
+Source:    when at the very start of the
+Reference: when at the very start of the
+Greedy:    i i this
+Beam:      i i a
+
+Example 6
+Source:    although this film changes reality to make
+Reference: although this film changes reality to make
+Greedy:    i i this
+Beam:      i i a
+
+Example 7
+Source:    since this cartoon was made in the
+Reference: since this cartoon was made in the
+Greedy:    i i i
+Beam:      i i a
+
+Example 8
+Source:    i ve seen this movie twice both
+Reference: i ve seen this movie twice both
+Greedy:    i i this
+Beam:      i i a

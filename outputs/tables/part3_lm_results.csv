@@ -1,0 +1,5 @@
+model,clip_value,test_loss,test_perplexity,max_gradient_norm,train_time_seconds,model_path
+rnn_clipped,1.0,7.242747497558594,1397.9295072985644,0.7443396418885102,1.0701321000233293,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part3_rnn_clipped.pt
+gru_clipped,1.0,7.386873213450114,1614.649547165671,0.4697369716541337,1.852760300040245,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part3_gru_clipped.pt
+lstm_clipped,1.0,7.536746692657471,1875.7178015863412,0.37714439701780866,1.459169700043276,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part3_lstm_clipped.pt
+rnn_no_clipping,None,7.580239582061767,1959.0982739705398,0.5150894229762474,0.8054798999801278,C:\Users\halas\OneDrive\Bureau\DL\outputs\models\part3_rnn_no_clipping.pt

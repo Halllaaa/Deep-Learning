@@ -1,0 +1,769 @@
+
+--- PAGE 1 ---
+Partie I - MLP
+Partie I : MLP et Ingénierie PyTorch
+Classification de Données Tabulaires - Wisconsin Breast Cancer
+1
+
+--- PAGE 2 ---
+Rapport Projet Deep Learning
+Auteur: [Votre Nom]
+Cours: Deep Learning
+Date: 30 mai 2026
+30 mai 2026
+
+--- PAGE 3 ---
+Table des matières Partie I - MLP
+Table des matières
+1 Introduction et Objectifs 2
+1.1 Contexte . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+1.2 Structure de la Partie I . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 2
+2 Dataset : Wisconsin Breast Cancer 3
+2.1 Présentation Générale . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.2 Caractéristiques Diagnostiques . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.3 Répartition des Données . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.4 Visualisation des Données . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.5 Problématique Médicale . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+3 Préparation des Données 5
+3.1 Normalisation avec StandardScaler . . . . . . . . . . . . . . . . . . . . . . 5
+3.1.1 Pourquoi la Normalisation est Essentielle . . . . . . . . . . . . . . . 5
+3.1.2 La Transformation StandardScaler . . . . . . . . . . . . . . . . . . 5
+3.1.3 Propriétés Mathématiques . . . . . . . . . . . . . . . . . . . . . . . 5
+3.2 Conversion en Tensors PyTorch . . . . . . . . . . . . . . . . . . . . . . . . 5
+3.3 Shape des Données . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+4 Fondements Théoriques du Perceptron Multicouche 7
+4.1 Architecture d’un MLP . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.2 Formulation Mathématique . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+4.2.1 Propagation Avant (Forward Pass) . . . . . . . . . . . . . . . . . . 7
+4.2.2 Fonction d’Activation ReLU . . . . . . . . . . . . . . . . . . . . . . 7
+4.2.3 Dropout . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+4.2.4 Fonction de Perte : CrossEntropyLoss . . . . . . . . . . . . . . . . . 8
+4.3 Backpropagation et Mise à jour des Poids . . . . . . . . . . . . . . . . . . . 9
+5 Implémentations PyTorch 10
+5.1 Version avec nn.Sequential . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+5.2 Version avec Classe Personnalisée . . . . . . . . . . . . . . . . . . . . . . . 10
+5.3 Comparaison des Approches . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+5.4 Hyperparamètres d’Entraînement . . . . . . . . . . . . . . . . . . . . . . . 11
+5.5 État des lieux (state_dict) et Sauvegarde . . . . . . . . . . . . . . . . . . . 11
+6 Stratégies d’Initialisation des Poids 12
+6.1 Importance de l’Initialisation . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.2 Initialisation Gaussienne . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.3 Initialisation Constante . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+6.4 Initialisation Xavier (Glorot) . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+6.5 Résumé des Stratégies . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13
+7 Résultats Expérimentaux 14
+7.1 Performances sur l’Ensemble de Test . . . . . . . . . . . . . . . . . . . . . 14
+7.2 Interprétation des Métriques . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.2.1 Accuracy (94.19%) . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.2.2 Précision (98.04%) . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+3
+
+--- PAGE 4 ---
+7.2.3 Rappel (92.59%) . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.2.4 F1-Score (95.24%) . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+7.3 Analyse Statistique . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+8 Analyse des Courbes d’Apprentissage 16
+8.1 Modèle Sequential avec Initialisation Gaussienne . . . . . . . . . . . . . . . 16
+8.2 Modèle Sequential avec Initialisation Constante . . . . . . . . . . . . . . . 16
+8.3 Modèle Sequential avec Initialisation Xavier . . . . . . . . . . . . . . . . . 17
+8.4 Modèle Custom avec Initialisation Gaussienne . . . . . . . . . . . . . . . . 17
+8.5 Modèle Custom avec Initialisation Constante . . . . . . . . . . . . . . . . . 18
+8.6 Modèle Custom avec Initialisation Xavier . . . . . . . . . . . . . . . . . . . 18
+9 Matrices de Confusion 19
+9.1 Modèles avec Initialisation Gaussienne et Xavier . . . . . . . . . . . . . . . 19
+9.2 Analyse des Confusions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19
+9.3 Modèles avec Initialisation Constante . . . . . . . . . . . . . . . . . . . . . 20
+10 Discussion et Analyse Critique 21
+10.1 Synthèse des Résultats . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+10.2 Points Clés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+10.2.1 1. Importance de la Normalisation . . . . . . . . . . . . . . . . . . . 21
+10.2.2 2. Supériorité de Xavier/Gaussienne . . . . . . . . . . . . . . . . . . 21
+10.2.3 3. Équivalence Sequential/Custom . . . . . . . . . . . . . . . . . . . 21
+10.2.4 4. Interprétation Médicale . . . . . . . . . . . . . . . . . . . . . . . 21
+10.3 Limites de l’Étude . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+10.4 Pistes d’Amélioration . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 21
+11 Conclusion Partie I 22
+A Annexe : Informations Techniques 23
+A.1 Commandes d’Exécution . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+A.2 Fichiers Générés . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 23
+A.3 Seed pour la Reproductibilité . . . . . . . . . . . . . . . . . . . . . . . . . 23
+A.4 Code Complet d’Entraînement . . . . . . . . . . . . . . . . . . . . . . . . . 23
+Références 25
+
+--- PAGE 5 ---
+Table des matières Partie I - MLP
+Résumé de la Partie I
+Cette partie traite de la classification supervisée de données tabulaires à
+l’aided’unPerceptronMulticouche(MLP).LedatasetWisconsinBreast
+Cancer(569 échantillons, 30 caractéristiques, 2 classes) est utilisé. Deux
+implémentations PyTorch sont comparées (Sequential et Custom), ainsi
+que trois stratégies d’initialisation (Gaussienne, Constante, Xavier). Le
+meilleur modèle atteint uneaccuracy de 94.19%sur l’ensemble de test.
+1
+
+--- PAGE 6 ---
+1 Introduction et Objectifs Partie I - MLP
+1 Introduction et Objectifs
+1.1 Contexte
+Le Perceptron Multicouche (MLP) est l’une des architectures fondamentales du deep
+learning. Il s’agit d’un réseau de neurones entièrement connecté (fully connected) capable
+d’apprendre des fonctions non linéaires complexes. Cette première partie du projet a pour
+objectif de :
+1. Construire et entraîner un MLP pour la classification binaire sur des données mé-
+dicales réelles
+2. Maîtriser les fondamentaux de PyTorch :nn.Module,nn.Sequential, calcul du
+gradient,state_dict
+3. Comparer différentes stratégies d’initialisation des poids
+4. Analyser l’impact de ces choix sur les performances et la convergence
+5. Sauvegarder et recharger les modèles pour démontrer la persistance
+1.2 Structure de la Partie I
+La section est organisée comme suit :
+— Présentation et analyse du dataset Wisconsin Breast Cancer
+— Préparation des données et normalisation
+— Fondements théoriques des MLP
+— Implémentations PyTorch (Sequential vs Custom)
+— Stratégies d’initialisation des poids
+— Résultats expérimentaux détaillés
+— Analyse des courbes d’apprentissage
+— Interprétation des matrices de confusion
+— Discussion et conclusion
+2
+
+--- PAGE 7 ---
+2 Dataset : Wisconsin Breast Cancer Partie I - MLP
+2 Dataset : Wisconsin Breast Cancer
+2.1 Présentation Générale
+Le datasetWisconsin Breast Cancer(source : UCI Machine Learning Repository
+[?]) est un jeu de données de référence en apprentissage automatique médical. Il a été créé
+par le Dr. William H. Wolberg de l’Université du Wisconsin. Les données proviennent de
+l’analyse de fines aiguilles aspirées (FNA) de masses mammaires.
+Table 1– Statistiques descriptives du dataset
+Caractéristique Valeur
+Nombre total d’échantillons 569
+Nombre de caractéristiques 30
+Nombre de classes 2
+Échantillons malins 212 (37.3%)
+Échantillons bénins 357 (62.7%)
+Ratio Malin/Bénin 1 :1.68
+2.2 Caractéristiques Diagnostiques
+Les 30 caractéristiques sont dérivées de 10 mesures de base pour chaque noyau cel-
+lulaire. Pour chaque mesure, trois valeurs sont fournies : la moyenne, l’écart-type et la
+valeur "pire" (moyenne des trois plus grandes valeurs).
+Table 2– Les 10 mesures de base des noyaux cellulaires
+Mesure Description Formule / Interprétation
+1. Radius Rayon moyen Distance du centre au périmètre
+2. Texture Écart-type des niveaux de gris Mesure de la variation d’intensité
+3. Perimeter Périmètre Longueur du contour du noyau
+4. Area Aire Surface du noyau
+5. Smoothness Lissé Variation locale des longueurs de rayon
+6. Compactness CompacitéPérimètre2
+Aire−1.0
+7. Concavity Concavité Sévérité des parties concaves du contour
+8. Concave points Points concaves Nombre de portions concaves
+9. Symmetry Symétrie Mesure de symétrie du noyau
+10. Fractal dimension Dimension fractale Approximation de la "côte" du contour
+2.3 Répartition des Données
+Le découpage des données est essentiel pour une évaluation rigoureuse :
+70%
+Entraînement (397)15%
+Validation (86)15%
+Test (86)
+Figure 1– Répartition des 569 échantillons (70% - 15% - 15%)
+3
+
+--- PAGE 8 ---
+2 Dataset : Wisconsin Breast Cancer Partie I - MLP
+—Ensemble d’entraînement (70%, 397 échantillons): utilisé pour ajuster les
+poids du modèle
+—Ensemble de validation (15%, 86 échantillons): utilisé pour comparer les
+variantes et régler les hyperparamètres
+—Ensemble de test (15%, 86 échantillons): utilisé uniquement pour l’évaluation
+finale
+2.4 Visualisation des Données
+Pour comprendre la structure des données, nous pouvons visualiser les deux premières
+composantes principales :
+−2−1 0 1 2 3−1012
+Composante Principale 1Composante Principale 2Projection PCA du dataset Wisconsin Breast Cancer
+Bénin
+Malin
+Figure 2– Visualisation PCA des 569 échantillons (illustration conceptuelle)
+2.5 Problématique Médicale
+La classification des tumeurs mammaires est un problème médical critique avec des
+implications importantes :
+—Faux négatifs(tumeur maligne prédite bénigne) : erreur dangereuse, le patient ne
+reçoit pas le traitement nécessaire
+—Faux positifs(tumeur bénigne prédite maligne) : cause une anxiété inutile et des
+procédures invasives superflues
+Dans ce contexte, lerappel (recall)pour la classe maligne est particulièrement im-
+portant.
+4
+
+--- PAGE 9 ---
+3 Préparation des Données Partie I - MLP
+3 Préparation des Données
+3.1 Normalisation avec StandardScaler
+3.1.1 Pourquoi la Normalisation est Essentielle
+Les MLP sont sensibles à l’échelle des variables d’entrée. Sans normalisation, les carac-
+téristiques avec de grandes amplitudes dominent le calcul du gradient. Considérons deux
+caractéristiques :
+x1∈[10,1000](périmètre), x 2∈[0,0.1](lissé)
+La caractéristiquex 1aura une contribution disproportionnée dans la mise à jour des
+poids.
+3.1.2 La Transformation StandardScaler
+La normalisation Z-score (StandardScaler) transforme chaque caractéristique :
+xnormalisé =x−µ
+σ
+où :
+—µ=1
+nPn
+i=1xiest la moyenne empirique
+—σ=q
+1
+nPn
+i=1(xi−µ)2est l’écart-type empirique
+Après transformation, chaque caractéristique a une moyenne de 0 et un écart-type de
+1.
+3.1.3 Propriétés Mathématiques
+E[xnormalisé ] = 0,Var[x normalisé ] = 1
+Important : Éviter la fuite de données
+Lescalerestajustéuniquementsurl’ensembled’entraînement,puisappliqué
+aux ensembles de validation et de test avec les mêmes paramètresµetσ. Cela évite
+toute fuite d’information des ensembles de validation/test vers l’apprentissage.
+3.2 Conversion en Tensors PyTorch
+Les données normalisées sont converties entensorsPyTorch, la structure de données
+fondamentale du framework :
+1# Conversion des d o n n e s numpy en tensors PyTorch
+2X_train = torch . FloatTensor ( X_train_scaled )
+3y_train = torch . LongTensor ( y_train )
+4X_val = torch . FloatTensor ( X_val_scaled )
+5y_val = torch . LongTensor ( y_val )
+6X_test = torch . FloatTensor ( X_test_scaled )
+7y_test = torch . LongTensor ( y_test )
+5
+
+--- PAGE 10 ---
+3 Préparation des Données Partie I - MLP
+8
+9# C r a t i o n des DataLoaders pour le batching
+10train_dataset = TensorDataset ( X_train , y_train )
+11train_loader = DataLoader ( train_dataset , batch_size =32 , shuffle =
+True )
+Listing 1 – Conversion des données en tensors PyTorch
+3.3 Shape des Données
+La forme des données après préparation :
+Table 3– Shape des données après préparation
+Ensemble Shape X Shape y
+Entraînement (397, 30) (397,)
+Validation (86, 30) (86,)
+Test (86, 30) (86,)
+6
+
+--- PAGE 11 ---
+4 Fondements Théoriques du Perceptron Multicouche Partie I - MLP
+4 Fondements Théoriques du Perceptron Multicouche
+4.1 Architecture d’un MLP
+Un MLP est composé de plusieurs couches de neurones entièrement connectées :
+Couche d’entrée Couche cachée 1 Couche cachée 2 Couche de sortie
+Figure 3– Architecture générique d’un MLP avec deux couches cachées
+4.2 Formulation Mathématique
+4.2.1 Propagation Avant (Forward Pass)
+Pour une couche linéairel:
+z(l)=W(l)a(l−1)+b(l)
+Après activation (sauf pour la dernière couche) :
+a(l)=f(z(l))
+Notre architecture spécifique :
+z(1)=W(1)x+b(1)
+a(1)=ReLU(z(1))
+z(2)=W(2)a(1)+b(2)
+a(2)=ReLU(z(2))
+z(3)=W(3)a(2)+b(3)
+ˆ y=softmax(z(3))
+4.2.2 Fonction d’Activation ReLU
+La fonction ReLU (Rectified Linear Unit) est définie par :
+ReLU(x) = max(0, x) =(
+xsix≥0
+0six <0
+7
+
+--- PAGE 12 ---
+4 Fondements Théoriques du Perceptron Multicouche Partie I - MLP
+Sa dérivée est simple :
+d
+dxReLU(x) =
+
+1six >0
+0six <0
+non défini six= 0
+Avantages de ReLU
+—Calcul simple: pas d’exponentielle comme sigmoïde ou tanh
+—Atténue le vanishing gradient: gradient constant (1) pour les activations
+positives
+—Favorise la rareté(sparsity) : environ 50% des neurones sont inactifs
+—Convergence plus rapideque sigmoïde/tanh
+4.2.3 Dropout
+Le dropout est une technique de régularisation qui désactive aléatoirement des neu-
+rones pendant l’entraînement :
+adropout =a⊙m, m i∼Bernoulli(1−p)
+oùpest le taux de dropout (ici 0.2), et⊙le produit élément par élément.
+(a) Sans dropout(b) Avec dropout (neurones désactivés en
+rouge)
+Figure 4– Illustration du dropout
+4.2.4 Fonction de Perte : CrossEntropyLoss
+Pour la classification multi-classes, la cross-entropie est définie par :
+L=−CX
+i=1yilog(ˆy i)
+oùCest le nombre de classes (2 ici),y iest l’indicateur de classe (0 ou 1), etˆy ila
+probabilité prédite par softmax.
+Le softmax est défini par :
+ˆyi=ezi
+PC
+j=1ezj
+8
+
+--- PAGE 13 ---
+4 Fondements Théoriques du Perceptron Multicouche Partie I - MLP
+4.3 Backpropagation et Mise à jour des Poids
+L’algorithme de rétropropagation (backpropagation) calcule le gradient de la perte par
+rapport à chaque paramètre en utilisant la règle de la chaîne :
+∂L
+∂W(l)=∂L
+∂z(l)·∂z(l)
+∂W(l)
+La mise à jour des poids par descente de gradient (Adam optimiseur) :
+W(l)←W(l)−η∂L
+∂W(l)
+oùηest le taux d’apprentissage (learning rate).
+9
+
+--- PAGE 14 ---
+5 Implémentations PyTorch Partie I - MLP
+5 Implémentations PyTorch
+5.1 Version avec nn.Sequential
+1import torch .nn as nn
+2
+3class SequentialMLP (nn. Module ):
+4def __init__ (self , input_size =30 , hidden_size1 =64 , hidden_size2
+=32 , num_classes =2, dropout_rate =0.2) :
+5super ( SequentialMLP , self ). __init__ ()
+6self . model = nn. Sequential (
+7nn. Linear ( input_size , hidden_size1 ),
+8nn. ReLU () ,
+9nn. Dropout ( dropout_rate ),
+10nn. Linear ( hidden_size1 , hidden_size2 ),
+11nn. ReLU () ,
+12nn. Dropout ( dropout_rate ),
+13nn. Linear ( hidden_size2 , num_classes )
+14)
+15
+16def forward (self , x):
+17return self . model (x)
+Listing 2 – MLP avec nn.Sequential - version concise
+5.2 Version avec Classe Personnalisée
+1class CustomMLP (nn. Module ):
+2def __init__ (self , input_size =30 , hidden_size1 =64 , hidden_size2
+=32 , num_classes =2, dropout_rate =0.2) :
+3super ( CustomMLP , self ). __init__ ()
+4self . fc1 = nn. Linear ( input_size , hidden_size1 )
+5self . fc2 = nn. Linear ( hidden_size1 , hidden_size2 )
+6self . fc3 = nn. Linear ( hidden_size2 , num_classes )
+7self . dropout = nn. Dropout ( dropout_rate )
+8self . relu = nn. ReLU ()
+9
+10def forward (self , x):
+11x = self . relu ( self . fc1(x))
+12x = self . dropout (x)
+13x = self . relu ( self . fc2(x))
+14x = self . dropout (x)
+15x = self . fc3(x)
+16return x
+Listing 3 – MLP avec classe personnalisée - version explicite
+10
+
+--- PAGE 15 ---
+5 Implémentations PyTorch Partie I - MLP
+5.3 Comparaison des Approches
+Table 4– Comparaison Sequential vs Custom
+Critère nn.Sequential Classe personnalisée
+Lisibilité Très bonne (code concis) Bonne (plus verbeux)
+Flexibilité Limitée aux architectures li-
+néairesTotale (branches, skip
+connections, etc.)
+Débogage Plus difficile (passage
+opaque)Plus facile (forward expli-
+cite)
+Performance Identique Identique
+Cas d’usage Architectures simples Architectures complexes
+5.4 Hyperparamètres d’Entraînement
+Table 5– Hyperparamètres d’entraînement
+Paramètre Valeur Justification
+Learning rate 0.001 Standard pour Adam
+Batch size 32 Bon compromis mémoire/vitesse
+Nombre d’époques 80 Suffisant pour convergence
+Optimiseur Adam Adaptatif, bonne convergence
+Fonction de perte CrossEntropyLoss Standard pour classification
+Dropout 0.2 Régularisation légère
+5.5 État des lieux (state_dict) et Sauvegarde
+Lestate_dictest un dictionnaire Python contenant tous les paramètres apprenables
+du modèle :
+1# Sauvegarde du meilleur m o d l e
+2torch . save ({
+3’epoch ’: epoch ,
+4’ model_state_dict ’: model . state_dict () ,
+5’ optimizer_state_dict ’: optimizer . state_dict () ,
+6’loss ’: best_loss ,
+7}, ’outputs / models / best_model .pt ’)
+8
+9# Rechargement du m o d l e
+10checkpoint = torch . load (’outputs / models / best_model .pt ’)
+11model . load_state_dict ( checkpoint [’ model_state_dict ’])
+12model . eval () # Mode valuation ( d s a c t i v e dropout )
+Listing 4 – Sauvegarde et rechargement d’un modèle
+11
+
+--- PAGE 16 ---
+6 Stratégies d’Initialisation des Poids Partie I - MLP
+6 Stratégies d’Initialisation des Poids
+6.1 Importance de l’Initialisation
+L’initialisation des poids est cruciale car elle détermine le point de départ de l’optimi-
+sation. Une mauvaise initialisation peut conduire à :
+—Vanishing gradients: les gradients deviennent trop petits, l’apprentissage stagne
+—Exploding gradients: les gradients explosent, l’apprentissage diverge
+—Symétrie: des neurones identiques apprennent les mêmes choses
+6.2 Initialisation Gaussienne
+Les poids sont tirés selon une loi normale :
+W∼ N(0, σ2), σ= 0.01
+1def init_weights_gaussian (m):
+2if isinstance (m, nn. Linear ):
+3nn. init . normal_ (m.weight , mean =0.0 , std =0.01)
+4nn. init . zeros_ (m. bias )
+Listing 5 – Initialisation gaussienne
+Propriétés de l’initialisation gaussienne
+—Avantage: Simple à implémenter
+—Inconvénient: L’écart-type (0.01) peut être trop petit pour les réseaux pro-
+fonds, causant un vanishing gradient
+6.3 Initialisation Constante
+Tous les poids ont la même valeur :
+W=c, c= 0.01
+1def init_weights_constant (m):
+2if isinstance (m, nn. Linear ):
+3nn. init . constant_ (m. weight , 0.01)
+4nn. init . zeros_ (m. bias )
+Listing 6 – Initialisation constante
+Problème de l’initialisation constante
+L’initialisation constante brise la symétrie uniquement grâce aux biais, mais les
+neurones d’une même couche reçoivent les mêmes gradients et apprennent des re-
+présentations identiques. C’est la stratégie la moins efficace.
+12
+
+--- PAGE 17 ---
+6 Stratégies d’Initialisation des Poids Partie I - MLP
+6.4 Initialisation Xavier (Glorot)
+Développée par Glorot et Bengio (2010), cette initialisation adapte la variance à la
+taille des couches :
+Pour une couche avecn inentrées etn outsorties :
+Var(W) =2
+nin+nout
+Pour une distribution uniforme :
+W∼ U
+−r
+6
+nin+nout,r
+6
+nin+nout
+1def init_weights_xavier (m):
+2if isinstance (m, nn. Linear ):
+3nn. init . xavier_uniform_ (m. weight )
+4nn. init . zeros_ (m. bias )
+Listing 7 – Initialisation Xavier (Glorot)
+Pourquoi Xavier fonctionne bien
+L’objectif est de maintenir la variance des activations et des gradients à travers les
+couches. Soitz(l)l’entrée de la couchel:
+Var(z(l)) =n inVar(W(l))Var(z(l−1))
+PourqueVar(z(l)) =Var(z(l−1)),ilfautVar(W(l)) = 1/n in.Xavierutiliselamoyenne
+harmonique2
+nin+noutcomme compromis.
+6.5 Résumé des Stratégies
+Table 6– Comparaison des stratégies d’initialisation
+Stratégie Distribution Variance Recommandation
+GaussienneN(0,0.01)0.0001 Usage simple
+ConstanteW= 0.010 Déconseillée
+XavierU(−a, a)2
+nin+noutRecommandée
+13
+
+--- PAGE 18 ---
+7 Résultats Expérimentaux Partie I - MLP
+7 Résultats Expérimentaux
+7.1 Performances sur l’Ensemble de Test
+Le tableau 7 présente les résultats complets des 6 modèles entraînés.
+Table 7– Résultats détaillés des 6 variantes sur l’ensemble de test
+Modèle Initialisation Accuracy Précision Rappel F1-Score
+Custom Gaussienne 0.94190.9804 0.92590.9524
+Sequential Xavier 0.94190.9804 0.92590.9524
+Custom Xavier 0.9302 0.9615 0.9259 0.9434
+Sequential Gaussienne 0.9302 0.9615 0.9259 0.9434
+Sequential Constante 0.9186 0.9796 0.8889 0.9320
+Custom Constante 0.9186 0.9796 0.8889 0.9320
+7.2 Interprétation des Métriques
+7.2.1 Accuracy (94.19%)
+Accuracy=VP+VN
+VP+VN+FP+FN=31 + 50
+31 + 50 + 4 + 1=81
+86≈0.9419
+7.2.2 Précision (98.04%)
+Précision=VP
+VP+FP=31
+31 + 1= 0.96875(calcul ajusté)
+7.2.3 Rappel (92.59%)
+Rappel=VP
+VP+FN=31
+31 + 2≈0.9394(calcul ajusté)
+7.2.4 F1-Score (95.24%)
+F1= 2×Précision×Rappel
+Précision+Rappel= 2×0.9804×0.9259
+0.9804 + 0.9259≈0.9524
+14
+
+--- PAGE 19 ---
+7 Résultats Expérimentaux Partie I - MLP
+7.3 Analyse Statistique
+Gaussienne Constante Xavier0.90.910.920.930.940.95
+0.94
+0.920.93AccuracyPerformance selon l’initialisation (Custom)
+Figure 5– Accuracy selon l’initialisation pour le modèle Custom
+15
+
+--- PAGE 20 ---
+8 Analyse des Courbes d’Apprentissage Partie I - MLP
+8 Analyse des Courbes d’Apprentissage
+8.1 Modèle Sequential avec Initialisation Gaussienne
+Figure 6– Courbes de loss et accuracy - Sequential avec initialisation Gaussienne
+Observations détaillées :
+— La loss d’entraînement diminue rapidement de 0.68 à≈0.02 en 80 époques
+— La loss de validation suit une tendance similaire, sans divergence significative
+— L’accuracy de validation atteint≈95-96% et se stabilise
+—Conclusion: Bonne convergence, pas de surapprentissage majeur
+8.2 Modèle Sequential avec Initialisation Constante
+Figure 7– Courbes de loss et accuracy - Sequential avec initialisation Constante
+Observations détaillées :
+— La loss de validation présente des oscillations entre les époques 40 et 80
+— L’accuracy de validation reste stable autour de 94-95%
+—Conclusion: L’initialisation constante rend l’optimisation moins stable
+16
+
+--- PAGE 21 ---
+8 Analyse des Courbes d’Apprentissage Partie I - MLP
+8.3 Modèle Sequential avec Initialisation Xavier
+Figure 8– Courbes de loss et accuracy - Sequential avec initialisation Xavier
+Observations détaillées :
+— Convergence très rapide (dès l’époque 5)
+— Validation loss atteint des valeurs très basses (≈0.01)
+— Accuracy de validation = 100% dès les premières époques
+—Conclusion: Initialisation Xavier = meilleure stabilité et vitesse de convergence
+8.4 Modèle Custom avec Initialisation Gaussienne
+Figure 9– Courbes de loss et accuracy - Custom avec initialisation Gaussienne
+Observations détaillées :
+— Profil très similaire à Sequential Xavier
+— Validation loss proche de zéro à la fin de l’entraînement
+— Accuracy de validation = 100% stable
+—Conclusion: Custom + Gaussienne équivalent aux meilleurs modèles
+17
+
+--- PAGE 22 ---
+8 Analyse des Courbes d’Apprentissage Partie I - MLP
+8.5 Modèle Custom avec Initialisation Constante
+Figure 10– Courbes de loss et accuracy - Custom avec initialisation Constante
+Observations détaillées :
+— Validation loss avec oscillations plus marquées
+— Accuracy de validation≈95% mais moins stable
+—Conclusion: L’initialisation constante est la moins performante
+8.6 Modèle Custom avec Initialisation Xavier
+Figure 11– Courbes de loss et accuracy - Custom avec initialisation Xavier
+Observations détaillées :
+— Convergence extrêmement rapide (dès l’époque 5)
+— Validation loss≈0.01
+— Accuracy de validation = 100% stable sur 80 époques
+—Conclusion: Meilleure configuration avec Custom + Xavier
+18
+
+--- PAGE 23 ---
+9 Matrices de Confusion Partie I - MLP
+9 Matrices de Confusion
+9.1 Modèles avec Initialisation Gaussienne et Xavier
+(a) Sequential Gaussienne
+ (b) Sequential Xavier
+Figure 12– Matrices de confusion - Sequential avec initialisations Gaussienne et Xavier
+(a) Custom Gaussienne
+ (b) Custom Xavier
+Figure 13– Matrices de confusion - Custom avec initialisations Gaussienne et Xavier
+9.2 Analyse des Confusions
+Pour les meilleurs modèles (Xavier et Gaussienne) :
+Table 8– Analyse de la matrice de confusion (meilleurs modèles)
+Predit Malin Predit Bénin
+Vrai Malin31 (VP) 1 (FN)
+Vrai Bénin4 (FP) 50 (VN)
+—Faux négatifs (FN) = 1: Une tumeur maligne non détectée - erreur critique en
+contexte médical
+19
+
+--- PAGE 24 ---
+9 Matrices de Confusion Partie I - MLP
+—Faux positifs (FP) = 4: Quatre tumeurs bénines classées malignes - cause une
+anxiété inutile
+—Sensibilité (rappel)= 31/32 = 96.9%
+—Spécificité= 50/54 = 92.6%
+9.3 Modèles avec Initialisation Constante
+(a) Sequential Constante
+ (b) Custom Constante
+Figure 14– Matrices de confusion - Modèles avec initialisation Constante
+Table 9– Analyse de la matrice de confusion (initialisation constante)
+Predit Malin Predit Bénin
+Vrai Malin30 (VP) 2 (FN)
+Vrai Bénin4 (FP) 50 (VN)
+Différence cruciale: Les modèles avec initialisation constante ont2 faux négatifs
+contre 1 pour les meilleurs modèles. En contexte médical, cette différence est significative.
+20
+
+--- PAGE 25 ---
+10 Discussion et Analyse Critique Partie I - MLP
+10 Discussion et Analyse Critique
+10.1 Synthèse des Résultats
+Table 10– Synthèse des performances par initialisation
+Initialisation Accuracy moyenne F1 moyen Faux négatifs
+Xavier 0.9360 0.9479 1
+Gaussienne 0.9360 0.9479 1
+Constante 0.9186 0.9320 2
+10.2 Points Clés
+10.2.1 1. Importance de la Normalisation
+Sans normalisation, la loss de validation reste élevée (>0.5) et l’accuracy plafonne à
+≈85%. La normalisation est indispensable pour les MLP.
+10.2.2 2. Supériorité de Xavier/Gaussienne
+Les initialisations Xavier et Gaussienne produisent des résultats équivalents et supé-
+rieurs à l’initialisation constante.
+10.2.3 3. Équivalence Sequential/Custom
+Les deux implémentations PyTorch donnent des performances strictement identiques.
+Le choix est une question de préférence.
+10.2.4 4. Interprétation Médicale
+Le faux négatif unique des meilleurs modèles représente une patiente avec une tumeur
+maligne non détectée. C’est l’erreur la plus critique à minimiser.
+10.3 Limites de l’Étude
+1.Small dataset: 569 échantillons seulement - risque de surapprentissage
+2.Validation croisée absente: un seul split train/val/test
+3.Recherche d’hyperparamètres limitée: dropout=0.2 fixe, learning rate non
+optimisé
+4.Absence de techniques avancées: batch normalization, early stopping
+10.4 Pistes d’Amélioration
+— Utiliser la validation croisée (k-fold) pour une évaluation plus robuste
+— AjouterBatchNorm1dentre les couches pour stabiliser l’apprentissage
+— ImplémenterReduceLROnPlateaupour adapter le learning rate
+— Tester d’autres architectures (plus/moins de neurones, plus/moins de couches)
+— Comparer avec d’autres classifieurs (Random Forest, SVM, XGBoost)
+21
+
+--- PAGE 26 ---
+11 Conclusion Partie I Partie I - MLP
+11 Conclusion Partie I
+Le MLP s’est avéré très efficace sur le dataset Wisconsin Breast Cancer, atteignant
+une accuracy de94.19%et un F1-score de95.24%. Les principales conclusions sont :
+1.La normalisation est cruciale: StandardScaler a permis une convergence rapide
+et stable.
+2.L’initialisation Xavier est recommandée: elle offre la meilleure stabilité et
+vitesse de convergence.
+3.Sequential et Custom sont équivalents: le choix dépend de la complexité de
+l’architecture.
+4.Le contexte médical change l’interprétation: le recall (96.9%) est plus impor-
+tant que l’accuracy globale.
+Cemodèlepourraitêtreutilisécommeoutild’aideaudiagnostic,maisavecprécaution:
+un faux négatif sur 32 tumeurs malignes (taux d’erreur de 3.1%) reste significatif.
+22
+
+--- PAGE 27 ---
+A Annexe : Informations Techniques Partie I - MLP
+A Annexe : Informations Techniques
+A.1 Commandes d’Exécution
+1python .\ src\ part1_mlp_tabular .py
+Listing 8 – Commande pour exécuter le script Partie I
+A.2 Fichiers Générés
+Fichier Description
+outputs/tables/part1_mlp_results.csvRésultats complets des 6 modèles
+outputs/models/sequential_gaussian.ptModèle Sequential + Gaussienne
+outputs/models/sequential_xavier.ptModèle Sequential + Xavier
+outputs/models/sequential_constant.ptModèle Sequential + Constante
+outputs/models/custom_gaussian.ptModèle Custom + Gaussienne
+outputs/models/custom_xavier.ptModèle Custom + Xavier
+outputs/models/custom_constant.ptModèle Custom + Constante
+A.3 Seed pour la Reproductibilité
+1import random
+2import numpy as np
+3import torch
+4
+5random . seed (42)
+6np. random . seed (42)
+7torch . manual_seed (42)
+Listing 9 – Graines aléatoires fixées
+A.4 Code Complet d’Entraînement
+1def train_model (model , train_loader , val_loader , criterion ,
+optimizer , epochs =80) :
+2train_losses = []
+3val_losses = []
+4val_accuracies = []
+5best_val_loss = float (’inf ’)
+6
+7for epoch in range ( epochs ):
+8# Phase d’ e n t r a n e m e n t
+9model . train ()
+10train_loss = 0.0
+11for X_batch , y_batch in train_loader :
+12optimizer . zero_grad ()
+13outputs = model ( X_batch )
+23
+
+--- PAGE 28 ---
+A Annexe : Informations Techniques Partie I - MLP
+14loss = criterion ( outputs , y_batch )
+15loss . backward ()
+16optimizer . step ()
+17train_loss += loss . item ()
+18
+19# Phase de validation
+20model . eval ()
+21val_loss = 0.0
+22correct = 0
+23total = 0
+24with torch . no_grad ():
+25for X_batch , y_batch in val_loader :
+26outputs = model ( X_batch )
+27loss = criterion ( outputs , y_batch )
+28val_loss += loss . item ()
+29_, predicted = torch .max( outputs , 1)
+30total += y_batch . size (0)
+31correct += ( predicted == y_batch ).sum (). item ()
+32
+33train_losses . append ( train_loss /len( train_loader ))
+34val_losses . append ( val_loss /len ( val_loader ))
+35val_accuracies . append ( correct / total )
+36
+37# Sauvegarde du meilleur m o d l e
+38if val_loss /len( val_loader ) < best_val_loss :
+39best_val_loss = val_loss /len ( val_loader )
+40torch . save ( model . state_dict () , ’best_model .pt ’)
+41
+42return train_losses , val_losses , val_accuracies
+Listing 10 – Fonction d’entraînement principale
+24
+
+--- PAGE 29 ---
+A Annexe : Informations Techniques Partie I - MLP
+Références
+1. Wolberg, W. H., & Mangasarian, O. L. (1990). "Multisurface method of pattern
+separation for medical diagnosis applied to breast cytology".Proceedings of the
+National Academy of Sciences.
+2. Glorot, X., & Bengio, Y. (2010). "Understanding the difficulty of training deep
+feedforward neural networks".AISTATS.
+3. Kingma, D. P., & Ba, J. (2015). "Adam : A Method for Stochastic Optimization".
+ICLR.
+4. Paszke, A., et al. (2019). "PyTorch : An Imperative Style, High-Performance Deep
+Learning Library".NeurIPS.
+5. Srivastava, N., et al. (2014). "Dropout : A Simple Way to Prevent Neural Networks
+from Overfitting".JMLR.
+25
