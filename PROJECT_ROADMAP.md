@@ -1,16 +1,12 @@
-# Deep Learning Project Roadmap
-
-Source assignment: `Projet_Deep-Learning_EMSI.pdf`
+# Deep Learning Project 
 
 ## What The Project Is Asking For
-
-You must produce an individual deep learning project with three independent but connected parts:
 
 1. Tabular data classification with an MLP.
 2. Image classification with a CNN.
 3. Sequence/text modeling with RNN, LSTM, GRU, and a small Seq2Seq system.
 
-For each part, the teacher expects:
+For each part:
 
 - theory explanation;
 - PyTorch implementation;
@@ -19,15 +15,10 @@ For each part, the teacher expects:
 - critical analysis;
 - one synthesis answer based on a real dataset.
 
-The final report must connect the three parts and explain why different data structures need different neural architectures.
-
-## Recommended Dataset Choices
-
-To keep the project realistic and finishable, use datasets that are standard, accepted, and easy to explain.
-
+## Dataset Choices
 ### Part I: Tabular MLP
 
-Recommended dataset: Breast Cancer Wisconsin.
+Dataset: Breast Cancer Wisconsin.
 
 Why:
 
@@ -36,11 +27,10 @@ Why:
 - small enough to train quickly;
 - good for accuracy, precision, recall, F1-score, and confusion matrix.
 
-Alternative: Wine Quality, but it needs more preprocessing and is slightly more annoying for a first full project.
 
 ### Part II: CNN
 
-Recommended dataset: Fashion-MNIST.
+Dataset: Fashion-MNIST.
 
 Why:
 
@@ -65,7 +55,6 @@ Why:
 - Seq2Seq can be demonstrated on a small parallel dataset;
 - easier to finish than a large production translation system.
 
-If the teacher requires a real public corpus, use a small `fra-eng` Tatoeba-style dataset or another simple parallel corpus.
 
 ## Project Structure To Build
 
@@ -98,7 +87,7 @@ deep_learning_project/
 
 An MLP is a feed-forward neural network. It receives a vector of features, passes it through fully connected layers, applies nonlinear activations, and outputs class probabilities or logits.
 
-Key concepts to explain:
+Key concepts :
 
 - `nn.Module`: base class for PyTorch models.
 - `forward`: defines the computation from input to output.
@@ -185,33 +174,8 @@ RNNs model sequences naturally, but simple RNNs struggle with long dependencies.
 
 ## Final Transversal Discussion
 
-The final answer should compare the three data types:
-
 - tabular data: independent feature vector, so MLP is reasonable;
 - image data: spatial grid with local patterns, so CNN is better;
 - sequence data: ordered elements with temporal/contextual dependency, so recurrent or encoder-decoder models are better.
 
-The central idea:
-
-Deep learning uses the same supervised learning principle, but the architecture must match the structure of the data.
-
-## Recommended Work Order
-
-1. Create environment and folder structure.
-2. Finish Part I completely.
-3. Finish Part II completely.
-4. Finish Part III in a smaller but clean version.
-5. Generate result tables and figures.
-6. Write the report progressively, not at the end.
-7. Add the final transversal discussion.
-
-## Immediate Next Step
-
-Start with Part I because it is the foundation for PyTorch:
-
-1. Create the project folders.
-2. Prepare the Breast Cancer Wisconsin dataset.
-3. Build the `nn.Sequential` MLP.
-4. Train and evaluate it.
-5. Then rewrite it as a custom `nn.Module`.
 
