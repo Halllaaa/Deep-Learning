@@ -12,6 +12,11 @@ from torch.utils.data import DataLoader, Subset
 from torchvision import datasets, transforms
 
 
+# ============================================================
+# Global paths and class names
+# ============================================================
+# Part 2 saves every artifact in the same project output structure:
+# models, figures, and CSV/text tables are separated for clarity.
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data"
 OUTPUTS = ROOT / "outputs"
@@ -38,11 +43,20 @@ CLASS_NAMES = [
 ]
 
 
+# ============================================================
+# Device management
+# ============================================================
 def get_device() -> torch.device:
+    # Use CUDA automatically if the laptop has a compatible NVIDIA GPU.
     return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
+# ============================================================
+# Manual convolution and pooling operations
+# ============================================================
 def cross_correlation_2d(x: torch.Tensor, kernel: torch.Tensor) -> torch.Tensor:
+    # This implements the basic 2D cross-correlation operation by hand.
+    # It slides the kernel over the image and computes element-wise products.
     kernel_h, kernel_w = kernel.shape
     out_h = x.shape[0] - kernel_h + 1
     out_w = x.shape[1] - kernel_w + 1
@@ -57,6 +71,8 @@ def cross_correlation_2d(x: torch.Tensor, kernel: torch.Tensor) -> torch.Tensor:
 
 
 def manual_pooling_2d(x: torch.Tensor, kernel_size: int = 2, stride: int = 2, mode: str = "max") -> torch.Tensor:
+    # Pooling reduces spatial size. Max pooling keeps the strongest activation;
+    # average pooling keeps the mean activation in each local window.
     out_h = (x.shape[0] - kernel_size) // stride + 1
     out_w = (x.shape[1] - kernel_size) // stride + 1
     output = torch.zeros((out_h, out_w), dtype=x.dtype)
@@ -78,10 +94,13 @@ def manual_pooling_2d(x: torch.Tensor, kernel_size: int = 2, stride: int = 2, mo
 
 
 def output_size(input_size: int, kernel_size: int, padding: int = 0, stride: int = 1) -> int:
+    # Standard CNN formula for the output height/width after convolution.
     return ((input_size + 2 * padding - kernel_size) // stride) + 1
 
 
 def demonstrate_manual_operations() -> None:
+    # This function compares our manual calculations with PyTorch operations.
+    # It proves that the mathematical explanation and the framework behavior match.
     x = torch.tensor(
         [
             [1.0, 2.0, 3.0, 4.0],
@@ -129,7 +148,12 @@ def demonstrate_manual_operations() -> None:
     print(f"Manual operation comparison saved at: {report_path}")
 
 
+# ============================================================
+# Fashion-MNIST dataset and DataLoaders
+# ============================================================
 def make_data_loaders(batch_size: int = 128, train_limit: int = 4000, val_limit: int = 1000, test_limit: int = 1000):
+    # Fashion-MNIST images are 28x28 grayscale clothing images.
+    # ToTensor converts them to tensors; Normalize centers values around 0.
     transform = transforms.Compose(
         [
             transforms.ToTensor(),
@@ -139,6 +163,8 @@ def make_data_loaders(batch_size: int = 128, train_limit: int = 4000, val_limit:
     full_train = datasets.FashionMNIST(DATA_DIR, train=True, download=True, transform=transform)
     test_data = datasets.FashionMNIST(DATA_DIR, train=False, download=True, transform=transform)
 
+    # A fixed seed gives the same train/validation subsets every run.
+    # The limits keep training fast enough for a laptop while still meaningful.
     generator = torch.Generator().manual_seed(42)
     shuffled_indices = torch.randperm(len(full_train), generator=generator).tolist()
     train_indices = shuffled_indices[:train_limit]
@@ -151,9 +177,14 @@ def make_data_loaders(batch_size: int = 128, train_limit: int = 4000, val_limit:
     return train_loader, val_loader, test_loader
 
 
+# ============================================================
+# Baseline model: MLP on flattened images
+# ============================================================
 class ImageMLP(nn.Module):
     def __init__(self):
         super().__init__()
+        # The image is flattened from 28x28 pixels to 784 numbers.
+        # This baseline ignores spatial structure, unlike a CNN.
         self.network = nn.Sequential(
             nn.Flatten(),
             nn.Linear(28 * 28, 256),
@@ -168,9 +199,13 @@ class ImageMLP(nn.Module):
         return self.network(x)
 
 
+# ============================================================
+# CNN model: LeNet-style architecture
+# ============================================================
 class LeNetCNN(nn.Module):
     def __init__(self, filters: int = 16, padding: int = 2, pooling: str = "max", use_1x1: bool = False):
         super().__init__()
+        # The pooling argument lets us compare max-pooling and average-pooling.
         pool_layer = nn.MaxPool2d if pooling == "max" else nn.AvgPool2d
         layers = [
             nn.Conv2d(1, filters, kernel_size=5, padding=padding),
@@ -179,6 +214,7 @@ class LeNetCNN(nn.Module):
         ]
 
         if use_1x1:
+            # A 1x1 convolution mixes channels without changing image size.
             layers.extend([nn.Conv2d(filters, filters, kernel_size=1), nn.ReLU()])
 
         layers.extend(
@@ -190,6 +226,8 @@ class LeNetCNN(nn.Module):
         )
         self.features = nn.Sequential(*layers)
 
+        # A dummy image is passed once to calculate the flatten size automatically.
+        # This avoids hard-coding a dimension that changes when padding/filter choices change.
         with torch.no_grad():
             dummy = torch.zeros(1, 1, 28, 28)
             flattened_dim = self.features(dummy).view(1, -1).shape[1]
@@ -208,9 +246,13 @@ class LeNetCNN(nn.Module):
         return self.classifier(x)
 
 
+# ============================================================
+# CNN variant: strided convolutions
+# ============================================================
 class StridedCNN(nn.Module):
     def __init__(self):
         super().__init__()
+        # This model reduces image size using stride=2 convolutions instead of pooling.
         self.features = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, padding=1, stride=2),
             nn.ReLU(),
@@ -228,7 +270,11 @@ class StridedCNN(nn.Module):
         return self.classifier(self.features(x))
 
 
+# ============================================================
+# Training loop
+# ============================================================
 def train_model(model, train_loader, val_loader, device, epochs: int = 3, lr: float = 1e-3):
+    # CrossEntropyLoss is the standard loss for multi-class classification.
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     history = {"train_loss": [], "val_loss": [], "val_accuracy": []}
@@ -238,12 +284,14 @@ def train_model(model, train_loader, val_loader, device, epochs: int = 3, lr: fl
     start = perf_counter()
 
     for epoch in range(1, epochs + 1):
+        # Training mode enables layers such as Dropout.
         model.train()
         total_loss = 0.0
 
         for images, labels in train_loader:
             images = images.to(device)
             labels = labels.to(device)
+            # Standard training cycle: forward pass, loss, backward pass, update.
             optimizer.zero_grad()
             logits = model(images)
             loss = criterion(logits, labels)
@@ -257,6 +305,7 @@ def train_model(model, train_loader, val_loader, device, epochs: int = 3, lr: fl
         history["val_loss"].append(val_loss)
         history["val_accuracy"].append(val_accuracy)
 
+        # Keep the best validation model so final testing uses the best epoch.
         if val_accuracy > best_val_accuracy:
             best_val_accuracy = val_accuracy
             best_state = {key: value.detach().cpu().clone() for key, value in model.state_dict().items()}
@@ -272,7 +321,11 @@ def train_model(model, train_loader, val_loader, device, epochs: int = 3, lr: fl
     return history, best_val_accuracy, elapsed
 
 
+# ============================================================
+# Evaluation loop
+# ============================================================
 def evaluate_model(model, loader, device, criterion=None):
+    # Evaluation collects predictions and true labels without updating weights.
     model.eval()
     predictions = []
     targets = []
@@ -285,6 +338,7 @@ def evaluate_model(model, loader, device, criterion=None):
             logits = model(images)
             if criterion is not None:
                 losses.append(criterion(logits, labels).item() * images.size(0))
+            # The predicted class is the class with the highest logit.
             predicted = torch.argmax(logits, dim=1)
             predictions.extend(predicted.cpu().numpy().tolist())
             targets.extend(labels.cpu().numpy().tolist())
@@ -294,7 +348,11 @@ def evaluate_model(model, loader, device, criterion=None):
     return avg_loss, accuracy, np.array(predictions), np.array(targets)
 
 
+# ============================================================
+# Visualization helpers
+# ============================================================
 def plot_history(history, name: str):
+    # Training curves show whether learning improves or overfits across epochs.
     epochs = range(1, len(history["train_loss"]) + 1)
     plt.figure(figsize=(10, 4))
     plt.subplot(1, 2, 1)
@@ -318,6 +376,7 @@ def plot_history(history, name: str):
 
 
 def plot_confusion(y_true, y_pred, name: str):
+    # Confusion matrices show which clothing categories are mixed up.
     matrix = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(9, 7))
     sns.heatmap(matrix, annot=True, fmt="d", cmap="Blues", xticklabels=CLASS_NAMES, yticklabels=CLASS_NAMES)
@@ -330,6 +389,7 @@ def plot_confusion(y_true, y_pred, name: str):
 
 
 def visualize_feature_maps(model, test_loader, device, name: str):
+    # Feature maps make CNN internals visible: they show what filters activate on.
     if not hasattr(model, "features"):
         return
 
@@ -359,7 +419,11 @@ def visualize_feature_maps(model, test_loader, device, name: str):
     plt.close()
 
 
+# ============================================================
+# Main experiment orchestration
+# ============================================================
 def run_experiments():
+    # Seeds make the comparison between models reproducible.
     torch.manual_seed(42)
     np.random.seed(42)
     device = get_device()
@@ -368,6 +432,7 @@ def run_experiments():
     train_loader, val_loader, test_loader = make_data_loaders()
     print(f"Train/validation/test sizes: {len(train_loader.dataset)}/{len(val_loader.dataset)}/{len(test_loader.dataset)}")
 
+    # Each entry is one experiment required for comparing image classifiers.
     experiments = {
         "mlp_flattened_images": ImageMLP,
         "cnn_lenet_max_padding": lambda: LeNetCNN(filters=16, padding=2, pooling="max", use_1x1=False),
@@ -385,6 +450,7 @@ def run_experiments():
     for name, builder in experiments.items():
         print(f"\n=== Training {name} ===")
         model = builder()
+        # CNN variants train longer than the MLP baseline because they have spatial filters.
         epochs = 3 if name == "mlp_flattened_images" else 6
         history, best_val_accuracy, elapsed = train_model(model, train_loader, val_loader, device, epochs=epochs)
         criterion = nn.CrossEntropyLoss()
@@ -396,6 +462,7 @@ def run_experiments():
             zero_division=0,
         )
 
+        # Save all figures and model checkpoints for the report and reproducibility.
         plot_history(history, name)
         plot_confusion(y_true, y_pred, name)
         visualize_feature_maps(model, test_loader, device, name)
@@ -418,11 +485,13 @@ def run_experiments():
         )
         print(classification_report(y_true, y_pred, target_names=CLASS_NAMES, zero_division=0))
 
+        # Macro F1 treats all 10 classes equally, so it is a fair model ranking metric.
         if f1 > best_f1:
             best_f1 = f1
             best_model = model
             best_name = name
 
+    # Save the final comparison table used in the report.
     results_df = pd.DataFrame(results).sort_values("macro_f1", ascending=False)
     results_path = TABLE_DIR / "part2_cnn_results.csv"
     results_df.to_csv(results_path, index=False)

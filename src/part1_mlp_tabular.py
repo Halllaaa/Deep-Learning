@@ -19,6 +19,13 @@ from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
 
+# ============================================================
+# Global paths
+# ============================================================
+# These folders keep the experiment outputs organized:
+# - trained models go to outputs/models
+# - figures go to outputs/figures
+# - result tables go to outputs/tables
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUTS = ROOT / "outputs"
 MODEL_DIR = OUTPUTS / "models"
@@ -30,17 +37,29 @@ FIGURE_DIR.mkdir(parents=True, exist_ok=True)
 TABLE_DIR.mkdir(parents=True, exist_ok=True)
 
 
+# ============================================================
+# Device management
+# ============================================================
 def get_device() -> torch.device:
+    # Use the GPU if CUDA is available; otherwise use the CPU.
+    # All tensors and models must be moved to the same device.
     if torch.cuda.is_available():
         return torch.device("cuda")
     return torch.device("cpu")
 
 
+# ============================================================
+# Dataset loading and preprocessing
+# ============================================================
 def load_and_prepare_data(random_state: int = 42):
+    # Breast Cancer Wisconsin is a real tabular binary-classification dataset.
+    # Each row has 30 numerical features, and the target is malignant/benign.
     dataset = load_breast_cancer()
     x = pd.DataFrame(dataset.data, columns=dataset.feature_names)
     y = pd.Series(dataset.target, name="target")
 
+    # First split: keep 15% as a final test set.
+    # stratify=y preserves the class distribution in each split.
     x_train_full, x_test, y_train_full, y_test = train_test_split(
         x,
         y,
@@ -48,6 +67,9 @@ def load_and_prepare_data(random_state: int = 42):
         random_state=random_state,
         stratify=y,
     )
+
+    # Second split: create a validation set from the remaining data.
+    # The chosen ratio gives approximately 70% train, 15% validation, 15% test.
     x_train, x_val, y_train, y_val = train_test_split(
         x_train_full,
         y_train_full,
@@ -56,6 +78,8 @@ def load_and_prepare_data(random_state: int = 42):
         stratify=y_train_full,
     )
 
+    # StandardScaler is fitted only on the training set to avoid data leakage.
+    # The same scaler is then applied to validation and test sets.
     scaler = StandardScaler()
     x_train_scaled = scaler.fit_transform(x_train)
     x_val_scaled = scaler.transform(x_val)
@@ -75,13 +99,23 @@ def load_and_prepare_data(random_state: int = 42):
     }
 
 
+# ============================================================
+# PyTorch DataLoaders
+# ============================================================
 def make_loader(x, y, batch_size: int = 32, shuffle: bool = False) -> DataLoader:
+    # Neural networks in PyTorch work with tensors.
+    # Features are float32; labels are integer class IDs.
     features = torch.tensor(x, dtype=torch.float32)
     labels = torch.tensor(y, dtype=torch.long)
     return DataLoader(TensorDataset(features, labels), batch_size=batch_size, shuffle=shuffle)
 
 
+# ============================================================
+# MLP model definitions
+# ============================================================
 def build_sequential_mlp(input_dim: int, hidden_dim: int = 64) -> nn.Sequential:
+    # Version 1 required by the project: a concise MLP using nn.Sequential.
+    # Architecture: input -> 64 -> 32 -> 2 logits.
     return nn.Sequential(
         nn.Linear(input_dim, hidden_dim),
         nn.ReLU(),
@@ -93,6 +127,8 @@ def build_sequential_mlp(input_dim: int, hidden_dim: int = 64) -> nn.Sequential:
 
 
 class CustomMLP(nn.Module):
+    # Version 2 required by the project: a custom class inheriting from nn.Module.
+    # This version exposes the forward pass explicitly.
     def __init__(self, input_dim: int, hidden_dim: int = 64, dropout: float = 0.2):
         super().__init__()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
@@ -103,6 +139,7 @@ class CustomMLP(nn.Module):
         self.output = nn.Linear(hidden_dim // 2, 2)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # Forward pass: define how one batch moves through the network.
         x = self.fc1(x)
         x = self.activation1(x)
         x = self.dropout(x)
@@ -111,7 +148,12 @@ class CustomMLP(nn.Module):
         return self.output(x)
 
 
+# ============================================================
+# Weight initialization strategies
+# ============================================================
 def initialize_model(model: nn.Module, strategy: str) -> None:
+    # The assignment asks for at least three initialization strategies.
+    # We apply them only to Linear layers because they contain trainable weights.
     for module in model.modules():
         if isinstance(module, nn.Linear):
             if strategy == "gaussian":
@@ -127,16 +169,24 @@ def initialize_model(model: nn.Module, strategy: str) -> None:
                 raise ValueError(f"Unknown initialization strategy: {strategy}")
 
 
+# ============================================================
+# Model inspection
+# ============================================================
 def inspect_model(model: nn.Module) -> None:
+    # named_parameters() shows the trainable weights and biases.
     print("\nNamed parameters:")
     for name, parameter in model.named_parameters():
         print(f"{name:20s} shape={tuple(parameter.shape)} requires_grad={parameter.requires_grad}")
 
+    # state_dict() is what PyTorch saves and reloads for a trained model.
     print("\nState dict keys:")
     for key, value in model.state_dict().items():
         print(f"{key:20s} shape={tuple(value.shape)}")
 
 
+# ============================================================
+# Training loop
+# ============================================================
 def train_one_model(
     model: nn.Module,
     train_loader: DataLoader,
@@ -155,6 +205,7 @@ def train_one_model(
     start = perf_counter()
 
     for epoch in range(1, epochs + 1):
+        # Training mode activates layers such as Dropout.
         model.train()
         running_loss = 0.0
 
@@ -162,6 +213,12 @@ def train_one_model(
             features = features.to(device)
             labels = labels.to(device)
 
+            # Standard PyTorch training steps:
+            # 1. reset old gradients
+            # 2. forward pass
+            # 3. compute loss
+            # 4. backpropagation
+            # 5. optimizer update
             optimizer.zero_grad()
             logits = model(features)
             loss = criterion(logits, labels)
@@ -177,6 +234,7 @@ def train_one_model(
         history["val_loss"].append(val_loss)
         history["val_accuracy"].append(val_accuracy)
 
+        # Keep the best validation model, not necessarily the last epoch.
         if val_accuracy > best_val_accuracy:
             best_val_accuracy = val_accuracy
             best_state = {
@@ -199,12 +257,17 @@ def train_one_model(
     return history, best_val_accuracy, elapsed
 
 
+# ============================================================
+# Evaluation loop
+# ============================================================
 def evaluate_model(model, data_loader, device, criterion=None):
+    # Evaluation mode disables Dropout and avoids training-specific behavior.
     model.eval()
     losses = []
     predictions = []
     targets = []
 
+    # no_grad() saves memory because no backpropagation is needed for evaluation.
     with torch.no_grad():
         for features, labels in data_loader:
             features = features.to(device)
@@ -215,6 +278,7 @@ def evaluate_model(model, data_loader, device, criterion=None):
                 loss = criterion(logits, labels)
                 losses.append(loss.item() * features.size(0))
 
+            # The class with the highest logit is the predicted class.
             predicted = torch.argmax(logits, dim=1)
             predictions.extend(predicted.cpu().numpy().tolist())
             targets.extend(labels.cpu().numpy().tolist())
@@ -224,7 +288,11 @@ def evaluate_model(model, data_loader, device, criterion=None):
     return avg_loss, accuracy, np.array(predictions), np.array(targets)
 
 
+# ============================================================
+# Visualization helpers
+# ============================================================
 def plot_history(history, name: str) -> None:
+    # Save loss and validation accuracy curves for the experimental appendix.
     epochs = range(1, len(history["train_loss"]) + 1)
 
     plt.figure(figsize=(10, 4))
@@ -250,6 +318,7 @@ def plot_history(history, name: str) -> None:
 
 
 def plot_confusion_matrix(y_true, y_pred, target_names, name: str) -> None:
+    # A confusion matrix shows which classes are correctly or incorrectly predicted.
     matrix = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(5, 4))
     sns.heatmap(
@@ -268,7 +337,11 @@ def plot_confusion_matrix(y_true, y_pred, target_names, name: str) -> None:
     plt.close()
 
 
+# ============================================================
+# Main experiment orchestration
+# ============================================================
 def run_experiments():
+    # Seeds improve reproducibility of splits, initialization, and training.
     torch.manual_seed(42)
     np.random.seed(42)
 
@@ -292,6 +365,8 @@ def run_experiments():
         "custom": CustomMLP,
     }
 
+    # Train every combination:
+    # 2 model styles x 3 initialization strategies = 6 experiments.
     for model_type, builder in model_builders.items():
         for init_strategy in ["gaussian", "constant", "xavier"]:
             experiment_name = f"{model_type}_{init_strategy}"
@@ -323,10 +398,12 @@ def run_experiments():
                 zero_division=0,
             )
 
+            # Save figures for each experiment.
             histories[experiment_name] = history
             plot_history(history, experiment_name)
             plot_confusion_matrix(y_true, y_pred, data["target_names"], experiment_name)
 
+            # Save model checkpoint for later reuse.
             model_path = MODEL_DIR / f"{experiment_name}.pt"
             torch.save(
                 {
@@ -356,10 +433,12 @@ def run_experiments():
 
             print(classification_report(y_true, y_pred, target_names=data["target_names"]))
 
+    # Save all metrics into a CSV table for the report.
     results_df = pd.DataFrame(results).sort_values("f1_score", ascending=False)
     results_path = TABLE_DIR / "part1_mlp_results.csv"
     results_df.to_csv(results_path, index=False)
 
+    # Reload the best model to prove that save/reload works correctly.
     best = results_df.iloc[0]
     best_checkpoint = torch.load(best["model_path"], map_location=device)
     best_model = (

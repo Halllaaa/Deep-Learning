@@ -1,0 +1,22 @@
+# Python cache and local runtime files
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Downloaded datasets
+# The scripts download/use these datasets automatically, so they should not be committed.
+data/
+
+# Personal guidance/explanation files, not part of the clean submission
+PROJECT_ROADMAP.md
+REPORT_IMPLEMENTATION_REPLACEMENTS.md
+report/beginner_full_explanation_part1_part2.md
+report/beginner_full_explanation_part3.md
+report/student_report_extracted.txt
+report/student_report_part2_extracted.txt
+report/student_report_part3_extracted.txt
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
