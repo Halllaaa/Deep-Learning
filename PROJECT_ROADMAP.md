@@ -1,6 +1,5 @@
 # Deep Learning Project 
 
-## What The Project Is Asking For
 
 1. Tabular data classification with an MLP.
 2. Image classification with a CNN.
