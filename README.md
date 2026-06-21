@@ -1,7 +1,5 @@
 # Deep Learning Project 
 
-## What The Project Is Asking For
-
 1. Tabular data classification with an MLP.
 2. Image classification with a CNN.
 3. Sequence/text modeling with RNN, LSTM, GRU, and a small Seq2Seq system.
